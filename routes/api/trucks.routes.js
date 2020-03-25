@@ -36,5 +36,13 @@ router.post('/trucks', (req, res) => {
   res.status(201).json(savedTruck);
 });
 
+router.delete('/trucks/:truckId', (req, res) => {
+  const truckId = Number(req.params.truckId);
+
+  truckService.removeById(truckId);
+
+  res.json({status: `Truck with id ${truckId} removed successfully`});
+});
+
 
 module.exports = router;

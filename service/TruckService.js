@@ -14,7 +14,7 @@ class TruckService {
     const foundTruck = this.trucks.find((truck) => truck.id === id);
 
     if (!foundTruck) {
-      throw new Error(`Cannot find note with id ${id}`);
+      throw new Error(`Cannot find truck with id ${id}`);
     }
     return foundTruck;
   }
@@ -24,6 +24,23 @@ class TruckService {
 
     this.trucks = [...this.trucks, newTruck];
     return newTruck;
+  }
+
+  removeById(id) {
+    let noteRemoved = false;
+
+    this.trucks = this.trucks.filter((truck) => {
+      if (truck.id === id) {
+        noteRemoved = true;
+        return;
+      }
+
+      return truck;
+    });
+
+    if (!noteRemoved) {
+      throw new Error(`Cannot find note with id ${id}`);
+    }
   }
 }
 
