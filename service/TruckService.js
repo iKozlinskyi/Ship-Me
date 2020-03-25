@@ -42,6 +42,21 @@ class TruckService {
       throw new Error(`Cannot find note with id ${id}`);
     }
   }
+
+  updateById(id, editedTruckData) {
+    let editedTruck = null;
+
+    this.trucks = this.trucks.map((truck) => {
+      if (truck.id === id) {
+        editedTruck = editedTruckData;
+        return editedTruck;
+      }
+
+      return truck;
+    });
+
+    return editedTruck;
+  }
 }
 
 module.exports = new TruckService();

@@ -4,11 +4,11 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-router.param('truckId', (req, res, next) => {
-  const truckId = parseInt(req.params.truckId);
+router.param('id', (req, res, next) => {
+  const id = parseInt(req.params.id);
 
   try {
-    req.truck = truckService.findById(truckId);
+    req.truck = truckService.findById(id);
     next();
   } catch (err) {
     return res.status(404).json({error: err.message});
@@ -21,7 +21,7 @@ router.get('/trucks', (req, res) => {
   res.json({trucks});
 });
 
-router.get('/trucks/:truckId', (req, res) => {
+router.get('/trucks/:id', (req, res) => {
   res.json(req.truck);
 });
 
@@ -36,12 +36,26 @@ router.post('/trucks', (req, res) => {
   res.status(201).json(savedTruck);
 });
 
-router.delete('/trucks/:truckId', (req, res) => {
-  const truckId = Number(req.params.truckId);
+router.delete('/trucks/:id', (req, res) => {
+  const id = Number(req.params.id);
 
-  truckService.removeById(truckId);
+  truckService.removeById(id);
 
-  res.json({status: `Truck with id ${truckId} removed successfully`});
+  res.json({status: `Truck with id ${id} removed successfully`});
+});
+
+router.put('/trucks/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const truckDto = req.body;
+
+  // So far this is useless, as truckDto always truthy
+  if (!truckDto) {
+    return res.status(400).json({error: 'wrong request format'});
+  }
+
+  const editedTruck = truckService.updateById(id, truckDto);
+
+  res.json(editedTruck);
 });
 
 
