@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({status: 'ok'})
+  res.json({status: 'ok'});
 });
 
 app.listen(8081, () => {
