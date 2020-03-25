@@ -25,4 +25,16 @@ router.get('/trucks/:truckId', (req, res) => {
   res.json(req.truck);
 });
 
+router.post('/trucks', (req, res) => {
+  const truck = req.body;
+
+  if (!truck) {
+    return res.status(400).json({error: 'wrong request format'});
+  }
+
+  const savedTruck = truckService.save(truck);
+  res.status(201).json(savedTruck);
+});
+
+
 module.exports = router;

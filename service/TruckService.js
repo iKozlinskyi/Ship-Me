@@ -18,6 +18,13 @@ class TruckService {
     }
     return foundTruck;
   }
+
+  save(truckDto) {
+    const newTruck = truckDto;
+
+    this.trucks = [...this.trucks, newTruck];
+    return newTruck;
+  }
 }
 
 module.exports = new TruckService();

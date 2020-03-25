@@ -6,7 +6,7 @@ const trucksRouter = require('./routes/api/trucks.routes');
 app.use(express.json());
 const port = config.get('appPort');
 
-app.use(trucksRouter);
+app.use('/api', trucksRouter);
 
 app.get('/', (req, res) => {
   res.json({status: 'ok'});
