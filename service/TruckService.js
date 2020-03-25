@@ -9,6 +9,15 @@ class TruckService {
   findAll() {
     return [...this.trucks];
   }
+
+  findById(id) {
+    const foundTruck = this.trucks.find((truck) => truck.id === id);
+
+    if (!foundTruck) {
+      throw new Error(`Cannot find note with id ${id}`);
+    }
+    return foundTruck;
+  }
 }
 
 module.exports = new TruckService();
