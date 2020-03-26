@@ -6,6 +6,8 @@ const {
 } = require('../constants/errors');
 
 const User = require('../model/user/user.model');
+const Driver = require('../model/driver/driver.model');
+const {DRIVER} = require('../constants/userRoles');
 
 class UserService {
   async findByCredentials({username, password}) {
@@ -17,10 +19,13 @@ class UserService {
     return foundUser;
   }
 
-  async createUser(username, password) {
+  async createUserOfRole({username, password, role}) {
     await this.validateUserData(username, password);
-    const savedUser = User.create({username, password});
 
+    const userModel = this.getUserModel(role);
+
+    const savedUser = await userModel.create({username, password});
+    console.log(savedUser);
     return savedUser;
   }
 
@@ -42,6 +47,13 @@ class UserService {
 
     if (!password) {
       throw new Error(PASSWORD_BLANK);
+    }
+  }
+
+  getUserModel(role) {
+    switch (role) {
+      case DRIVER:
+        return Driver;
     }
   }
 }

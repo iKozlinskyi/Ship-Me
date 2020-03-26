@@ -19,10 +19,10 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const {username, password} = req.body;
+  const {username, password, role} = req.body;
 
   try {
-    const user = await userService.createUser(username, password);
+    const user = await userService.createUserOfRole({username, password, role});
     const token = authService.generateToken(user);
 
     res.json({token});
