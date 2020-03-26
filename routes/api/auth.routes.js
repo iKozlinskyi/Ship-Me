@@ -5,11 +5,11 @@ const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
 const {WRONG_CREDENTIALS} = require('../../constants/errors');
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const userData = req.body;
 
   try {
-    const user = userService.findByCredentials(userData);
+    const user = await userService.findByCredentials(userData);
     const token = authService.generateToken(user);
 
     res.json({token});

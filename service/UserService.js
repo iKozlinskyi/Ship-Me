@@ -14,7 +14,6 @@ class UserService {
     if (!foundUser) {
       throw new Error(WRONG_CREDENTIALS);
     }
-
     return foundUser;
   }
 

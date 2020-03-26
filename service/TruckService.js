@@ -1,61 +1,26 @@
+const Truck = require('../model/truck/truck.model');
+
 class TruckService {
-  constructor() {
-    this.trucks = [
-      {id: 1, status: 'active', type: 'big'},
-      {id: 2, status: 'not active', type: 'medium'},
-    ];
-  }
-
   findAll() {
-    return [...this.trucks];
+    return Truck.find();
   }
 
-  findById(id) {
-    const foundTruck = this.trucks.find((truck) => truck.id === id);
-
-    if (!foundTruck) {
-      throw new Error(`Cannot find truck with id ${id}`);
-    }
-    return foundTruck;
+  async findById(id) {
+    return await Truck.findById(id);
   }
 
   save(truckDto) {
-    const newTruck = truckDto;
-
-    this.trucks = [...this.trucks, newTruck];
+    const newTruck = Truck.create(truckDto);
     return newTruck;
   }
 
   removeById(id) {
-    let noteRemoved = false;
-
-    this.trucks = this.trucks.filter((truck) => {
-      if (truck.id === id) {
-        noteRemoved = true;
-        return;
-      }
-
-      return truck;
-    });
-
-    if (!noteRemoved) {
-      throw new Error(`Cannot find note with id ${id}`);
-    }
+    Truck.findByIdAndDelete(id);
   }
 
-  updateById(id, editedTruckData) {
-    let editedTruck = null;
-
-    this.trucks = this.trucks.map((truck) => {
-      if (truck.id === id) {
-        editedTruck = editedTruckData;
-        return editedTruck;
-      }
-
-      return truck;
-    });
-
-    return editedTruck;
+  async updateById(id, editedTruckData) {
+    await Truck.findByIdAndUpdate(id, editedTruckData);
+    return this.findById(id);
   }
 }
 
