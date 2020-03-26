@@ -5,18 +5,11 @@ const {
   USERNAME_BLANK,
 } = require('../constants/errors');
 
-class UserService {
-  constructor() {
-    this.users = [
-      {username: 'Banana', password: '123'},
-      {username: 'Potato', password: 'abc'},
-    ];
-  }
+const User = require('../model/user/user.model');
 
-  findByCredentials({username, password}) {
-    const foundUser = this.users.find((user) => {
-      return user.username === username && user.password === password;
-    });
+class UserService {
+  async findByCredentials({username, password}) {
+    const foundUser = await User.findOne({username, password});
 
     if (!foundUser) {
       throw new Error(WRONG_CREDENTIALS);
@@ -25,22 +18,22 @@ class UserService {
     return foundUser;
   }
 
-  createUser(username, password) {
-    this.validateUserData(username, password);
+  async createUser(username, password) {
+    await this.validateUserData(username, password);
+    const savedUser = User.create({username, password});
 
-    const newUser = {username, password};
-
-    this.users.push(newUser);
-    return newUser;
+    return savedUser;
   }
 
 
-  isUsernameAvailable(username) {
-    return !this.users.some((user) => user.username === username);
+  async isUsernameTaken(username) {
+    return User.exists({username});
   }
 
-  validateUserData(username, password) {
-    if (!this.isUsernameAvailable(username)) {
+  async validateUserData(username, password) {
+    const isUsernameTaken = await this.isUsernameTaken(username);
+
+    if (isUsernameTaken) {
       throw new Error(USERNAME_TAKEN);
     }
 

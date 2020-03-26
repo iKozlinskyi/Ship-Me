@@ -18,11 +18,11 @@ router.post('/login', (req, res) => {
   }
 });
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const {username, password} = req.body;
 
   try {
-    const user = userService.createUser(username, password);
+    const user = await userService.createUser(username, password);
     const token = authService.generateToken(user);
 
     res.json({token});

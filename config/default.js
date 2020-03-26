@@ -1,5 +1,6 @@
 module.exports = {
-  mongoPort: 27017,
   appPort: 8081,
   jwtSalt: 'secret',
+  dbName: 'Ship-Me',
+  mongoUrl: `mongodb://localhost:27017/Ship-Me`,
 };
