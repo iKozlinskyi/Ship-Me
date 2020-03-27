@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(savedLoad);
   } catch (err) {
-    return res.status(400).json({error: 'wrong request format'});
+    return res.status(400).json({error: err.message});
   }
 });
 

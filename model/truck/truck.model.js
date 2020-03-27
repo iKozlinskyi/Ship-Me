@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
+const {OL, IS} = require('../../constants/truckStatuses');
 const {DRIVER} = require('../../constants/userRoles');
 
 const truckSchema = new mongoose.Schema({
-  status: String,
+  status: {
+    type: String,
+    enum: [IS, OL],
+  },
   type: String,
   dimensions: {
     width: {type: Number, required: true},

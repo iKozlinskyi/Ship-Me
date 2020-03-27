@@ -1,4 +1,5 @@
 const Truck = require('../model/truck/truck.model');
+const {IS} = require('../constants/truckStatuses');
 
 class TruckService {
   findAll() {
@@ -20,6 +21,7 @@ class TruckService {
   }
 
   save(truckDto) {
+    truckDto.status = IS;
     const newTruck = Truck.create(truckDto);
     return newTruck;
   }
@@ -77,7 +79,8 @@ class TruckService {
       },
     ]);
 
-    return foundTrucks.length > 0 ? foundTrucks[0] : null;
+    // the truck is found again to ensure its methods - to cast it to document
+    return foundTrucks.length > 0 ? this.findById(foundTrucks[0]._id) : null;
   }
 }
 
