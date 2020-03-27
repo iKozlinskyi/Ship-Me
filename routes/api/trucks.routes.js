@@ -1,6 +1,7 @@
 const truckService = require('../../service/TruckService');
 const {TRUCK_NOT_FOUND_BY_ID} = require('./../../constants/errors');
 const {TRUCK_REMOVED_SUCCESSFULLY} = require('../../constants/messages');
+const truckTypesMap = require('../../constants/truckTypesMap');
 
 const express = require('express');
 const router = express.Router();
@@ -29,11 +30,11 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const truck = req.body;
-  truck.createdBy = req.user._id;
+  const truckData = truckTypesMap[req.body.type];
+  truckData.createdBy = req.user._id;
 
   try {
-    const savedTruck = await truckService.save(truck);
+    const savedTruck = await truckService.save(truckData);
 
     res.status(201).json(savedTruck);
   } catch (err) {
