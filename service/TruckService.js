@@ -6,7 +6,7 @@ class TruckService {
   }
 
   async findById(id) {
-    return await Truck.findById(id);
+    return Truck.findById(id);
   }
 
   save(truckDto) {

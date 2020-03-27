@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const {DRIVER} = require('../../constants/userRoles');
 
 // eslint-disable-next-line new-cap
 const truckSchema = new mongoose.Schema({
@@ -6,11 +7,12 @@ const truckSchema = new mongoose.Schema({
   type: String,
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Driver',
+    ref: DRIVER,
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Driver',
+    ref: DRIVER,
+    required: true,
   },
 });
 

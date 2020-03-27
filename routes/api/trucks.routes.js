@@ -3,7 +3,6 @@ const {TRUCK_NOT_FOUND_BY_ID} = require('./../../constants/errors');
 const {TRUCK_REMOVED_SUCCESSFULLY} = require('../../constants/messages');
 
 const express = require('express');
-// eslint-disable-next-line new-cap
 const router = express.Router();
 
 router.param('id', async (req, res, next) => {
@@ -28,21 +27,23 @@ router.get('/trucks/:id', (req, res) => {
   res.json(req.truck);
 });
 
-router.post('/trucks', (req, res) => {
+router.post('/trucks', async (req, res) => {
   const truck = req.body;
+  truck.createdBy = req.user._id;
 
-  if (!truck) {
+  try {
+    const savedTruck = await truckService.save(truck);
+
+    res.status(201).json(savedTruck);
+  } catch (err) {
     return res.status(400).json({error: 'wrong request format'});
   }
-
-  const savedTruck = truckService.save(truck);
-  res.status(201).json(savedTruck);
 });
 
-router.delete('/trucks/:id', (req, res) => {
+router.delete('/trucks/:id', async (req, res) => {
   const {id} = req.params;
 
-  truckService.removeById(id);
+  await truckService.removeById(id);
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 
