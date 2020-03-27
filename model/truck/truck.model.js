@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const {DRIVER} = require('../../constants/userRoles');
 
-// eslint-disable-next-line new-cap
 const truckSchema = new mongoose.Schema({
   status: String,
   type: String,

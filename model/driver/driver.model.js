@@ -7,6 +7,10 @@ const driverSpecificSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Truck',
   },
+  assignedLoad: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Load',
+  },
 });
 
 const Driver = User.discriminator(DRIVER, driverSpecificSchema);
