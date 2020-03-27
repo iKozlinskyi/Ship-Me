@@ -7,7 +7,8 @@ const {
 
 const User = require('../model/user/user.model');
 const Driver = require('../model/driver/driver.model');
-const {DRIVER} = require('../constants/userRoles');
+const Shipper = require('../model/shipper/shipper.model');
+const {SHIPPER, DRIVER} = require('../constants/userRoles');
 
 class UserService {
   async findByCredentials({username, password}) {
@@ -54,6 +55,8 @@ class UserService {
     switch (role) {
       case DRIVER:
         return Driver;
+      case SHIPPER:
+        return Shipper;
     }
   }
 }
