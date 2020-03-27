@@ -4,8 +4,8 @@ const salt = config.get('jwtSalt');
 
 
 class AuthService {
-  generateToken(user) {
-    return jwt.sign(JSON.stringify(user), salt);
+  generateToken({username, password}) {
+    return jwt.sign(JSON.stringify({username, password}), salt);
   }
 
   decodeToken(token) {
