@@ -1,5 +1,6 @@
 const Load = require('../model/load/load.model');
-const {POSTED} = require('../constants/loadStatuses');
+const {NEW, POSTED} = require('../constants/loadStatuses');
+const truckService = require('./TruckService');
 
 class LoadService {
   findAll() {
@@ -23,6 +24,10 @@ class LoadService {
     Load.findByIdAndDelete(id);
   }
 
+  setStatusForLoad(status, load) {
+    return load.updateOne({status});
+  }
+
   async updateById(id, editedLoadData) {
     await Load.findByIdAndUpdate(id, editedLoadData);
     return this.findById(id);
@@ -33,7 +38,12 @@ class LoadService {
     // TODO: clarify the status change for load
     const newLoad = await this.save(loadDto);
 
-    await newLoad.update({status: POSTED}, {new: true});
+    await this.setStatusForLoad(POSTED, newLoad);
+    const foundTruck = await truckService.findTruckForLoad(newLoad);
+
+    if (!foundTruck) {
+      await this.setStatusForLoad(NEW, newLoad);
+    }
     return this.findById(newLoad);
   }
 }

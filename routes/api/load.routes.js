@@ -1,4 +1,4 @@
-const loadService = require('../../service/loadService');
+const loadService = require('../../service/LoadService');
 const express = require('express');
 const {NEW} = require('../../constants/loadStatuses');
 const router = express.Router();
