@@ -18,7 +18,8 @@ router.param('id', async (req, res, next) => {
 });
 
 router.get('/', async (req, res) => {
-  const trucks = await truckService.findAll();
+  const userId = req.user._id;
+  const trucks = await truckService.findByCreatedUserId(userId);
 
   res.json({trucks});
 });
@@ -36,7 +37,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(savedTruck);
   } catch (err) {
-    return res.status(400).json({error: 'wrong request format'});
+    return res.status(400).json({error: err.message});
   }
 });
 

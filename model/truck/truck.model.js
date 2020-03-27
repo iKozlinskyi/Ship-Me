@@ -7,11 +7,11 @@ const truckSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: DRIVER,
+    required: true,
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: DRIVER,
-    required: true,
   },
 });
 

@@ -5,6 +5,10 @@ class TruckService {
     return Truck.find();
   }
 
+  findByCreatedUserId(userId) {
+    return Truck.find({createdBy: userId});
+  }
+
   async findById(id) {
     const foundTruck = await Truck.findById(id);
 
