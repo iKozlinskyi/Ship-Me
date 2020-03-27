@@ -5,6 +5,10 @@ class LoadService {
     return Load.find();
   }
 
+  findByCreatedUserId(userId) {
+    return Load.find({createdBy: userId});
+  }
+
   async findById(id) {
     return Load.findById(id);
   }

@@ -4,7 +4,8 @@ const {NEW} = require('../../constants/loadStatuses');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const loads = await loadService.findAll();
+  const userId = req.user._id;
+  const loads = await loadService.findByCreatedUserId(userId);
 
   res.json({loads});
 });
