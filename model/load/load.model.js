@@ -2,15 +2,14 @@ const mongoose = require('mongoose');
 const {SHIPPER, DRIVER} = require('../../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
-  status: String,
+  status: {type: String, required: true},
   state: String,
   dimensions: {
-    width: Number,
-    height: Number,
-    length: Number,
-    required: true,
+    width: {type: Number, required: true},
+    height: {type: Number, required: true},
+    length: {type: Number, required: true},
   },
-  payload: Number,
+  payload: {type: Number, required: true},
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: SHIPPER,
@@ -26,6 +25,6 @@ const loadSchema = new mongoose.Schema({
   }],
 });
 
-const Truck = mongoose.model('Truck', loadSchema);
+const Load = mongoose.model('Load', loadSchema);
 
-module.exports = Truck;
+module.exports = Load;

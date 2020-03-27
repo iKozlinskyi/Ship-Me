@@ -17,17 +17,17 @@ router.param('id', async (req, res, next) => {
   }
 });
 
-router.get('/trucks', async (req, res) => {
+router.get('/', async (req, res) => {
   const trucks = await truckService.findAll();
 
   res.json({trucks});
 });
 
-router.get('/trucks/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   res.json(req.truck);
 });
 
-router.post('/trucks', async (req, res) => {
+router.post('/', async (req, res) => {
   const truck = req.body;
   truck.createdBy = req.user._id;
 
@@ -40,14 +40,14 @@ router.post('/trucks', async (req, res) => {
   }
 });
 
-router.delete('/trucks/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const {id} = req.params;
 
   await truckService.removeById(id);
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 
-router.put('/trucks/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   const {id} = req.params;
   const truckDto = req.body;
 

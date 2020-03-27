@@ -3,8 +3,11 @@ const app = express();
 const config = require('config');
 const trucksRouter = require('./routes/api/trucks.routes');
 const authRouter = require('./routes/api/auth.routes');
+const loadsRouter = require('./routes/api/load.routes');
 const authMiddleware = require('./routes/middleware/auth');
+const requireRole = require('./routes/middleware/requireUserRole');
 const mongoose = require('mongoose');
+const {DRIVER, SHIPPER} = require('./constants/userRoles');
 
 const mongoUrl = config.get('mongoUrl');
 mongoose.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -22,7 +25,10 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', authRouter);
-app.use('/api', authMiddleware, trucksRouter);
+
+app.use(authMiddleware);
+app.use('/api/trucks', requireRole(DRIVER), trucksRouter);
+app.use('/api/loads', requireRole(SHIPPER), loadsRouter);
 
 app.listen(port, () => {
   console.log('App is listening on port %o', port);

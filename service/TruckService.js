@@ -6,7 +6,13 @@ class TruckService {
   }
 
   async findById(id) {
-    return Truck.findById(id);
+    const foundTruck = await Truck.findById(id);
+
+    if (!foundTruck) {
+      throw new Error();
+    }
+
+    return foundTruck;
   }
 
   save(truckDto) {
