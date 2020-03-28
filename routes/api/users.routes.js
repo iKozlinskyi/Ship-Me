@@ -5,8 +5,12 @@ const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
 const requireRole = require('../middleware/requireUserRole');
 const driverService = require('../../service/DriverService');
+const loadService = require('../../service/LoadService');
 const {DRIVER} = require('../../constants/userRoles');
-const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
+const {
+  USER_LACKS_AUTHORITY,
+  LOAD_NOT_FOUND_BY_ID,
+} = require('../../constants/errors');
 
 
 router.param('userId', (req, res, next) => {
@@ -17,6 +21,24 @@ router.param('userId', (req, res, next) => {
     return res.status(403).json({error: USER_LACKS_AUTHORITY});
   }
   next();
+});
+
+router.param('loadId', async (req, res, next) => {
+  const {loadId} = req.params;
+  const user = req.user;
+
+  try {
+    const foundLoad = await loadService.findById(loadId);
+
+    if (!loadService.hasUserAuthorityForLoad(user, foundLoad)) {
+      return res.status(403).json({error: USER_LACKS_AUTHORITY});
+    }
+
+    req.load = foundLoad;
+    next();
+  } catch (err) {
+    return res.status(404).json({error: LOAD_NOT_FOUND_BY_ID});
+  }
 });
 
 router.post('/users', async (req, res) => {
@@ -34,11 +56,12 @@ router.post('/users', async (req, res) => {
 });
 
 // This looks inconsistent.
-// TODO: ask what endpoint should be used
+// TODO: ask what endpoint should be used, an error might occur here - we don`t
+// check if truck exists. The truck id is passed in response body
 router.post('/:userId/assignedTrucks',
     requireRole(DRIVER),
     async (req, res) => {
-      const truckId = req.params.id;
+      const {truckId} = req.body;
       const driverId = req.user._id;
 
       try {
@@ -47,7 +70,6 @@ router.post('/:userId/assignedTrucks',
 
         res.json(assignedTruck);
       } catch (err) {
-        console.log(err);
         res.status(403).json({error: err.message});
       }
     });
@@ -79,6 +101,30 @@ router.get('/:userId/assignedLoads',
         res.json({assignedLoad});
       } catch (err) {
         res.status(404).send({error: err.message});
+      }
+    });
+
+// TODO: now the load state is changed by request body
+/**
+ * The input from body is read "as is", without validation,
+ * and then this string is used to set new state for load. Maybe I should use
+ * like a mapping between load state, and a number -
+ * 1: en route to pickup,
+ * 2: arrived to pickup...
+ * And take this number from client
+ */
+router.patch('/:userId/assignedLoads/:loadId',
+    requireRole(DRIVER),
+    async (req, res) => {
+      const load = req.load;
+      const {loadState} = req.body;
+      try {
+        const updatedLoad =
+            await loadService.performLoadStateChange(load, loadState);
+
+        res.json({load: updatedLoad});
+      } catch (err) {
+        res.status(501).send({error: err.message});
       }
     });
 

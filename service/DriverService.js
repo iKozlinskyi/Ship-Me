@@ -14,7 +14,6 @@ class DriverService {
   async assignTruck(driverId, truckId) {
     const newTruck = await Truck.findById(truckId);
     const driver = await Driver.findById(driverId).populate('truck').exec();
-
     if (!driver.equals(newTruck.createdBy)) {
       throw new Error(USER_LACKS_AUTHORITY);
     }
@@ -30,9 +29,9 @@ class DriverService {
     return Truck.findById(newTruck);
   }
 
-  async getAssignedDriverLoad(driverDto) {
+  async getAssignedDriverLoad(driverId) {
     const driver =
-        await Driver.findById(driverDto).populate('assignedLoad').exec();
+        await Driver.findById(driverId).populate('assignedLoad').exec();
 
     const {assignedLoad} = driver;
 
