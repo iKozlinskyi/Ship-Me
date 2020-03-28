@@ -1,5 +1,6 @@
 const Truck = require('../model/truck/truck.model');
-const {IS} = require('../constants/truckStatuses');
+const {CANNOT_CHANGE_DATA_OL} = require('../constants/errors');
+const {IS, OL} = require('../constants/truckStatuses');
 
 class TruckService {
   findAll() {
@@ -31,7 +32,13 @@ class TruckService {
   }
 
   async updateById(id, editedTruckData) {
+    const truck = await Truck.findById(id);
+
+    if (truck.status === OL) {
+      throw new Error(CANNOT_CHANGE_DATA_OL);
+    }
     await Truck.findByIdAndUpdate(id, editedTruckData);
+
     return this.findById(id);
   }
 

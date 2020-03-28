@@ -8,6 +8,7 @@ const TRUCK_NOT_FOUND_BY_ID = 'Cannot find truck with given id';
 const LOAD_NOT_FOUND_BY_ID = 'Cannot find load with given id';
 const NO_LOAD_ASSIGNED = 'Driver does not have a load assigned';
 const NO_TRUCK_ASSIGNED = 'Driver does not have a truck assigned';
+const CANNOT_CHANGE_DATA_OL = 'Not possible to change truck data while on load';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -20,4 +21,5 @@ module.exports = {
   LOAD_NOT_FOUND_BY_ID,
   NO_LOAD_ASSIGNED,
   NO_TRUCK_ASSIGNED,
+  CANNOT_CHANGE_DATA_OL,
 };

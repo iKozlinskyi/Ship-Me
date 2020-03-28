@@ -58,9 +58,13 @@ router.put('/:id', async (req, res) => {
     return res.status(400).json({error: 'wrong request format'});
   }
 
-  const editedTruck = await truckService.updateById(id, truckDto);
+  try {
+    const editedTruck = await truckService.updateById(id, truckDto);
 
-  res.json(editedTruck);
+    res.json(editedTruck);
+  } catch (err) {
+    res.status(409).send({error: err.message});
+  }
 });
 
 
