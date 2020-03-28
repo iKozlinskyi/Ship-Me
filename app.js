@@ -5,6 +5,7 @@ const trucksRouter = require('./routes/api/trucks.routes');
 const authRouter = require('./routes/api/auth.routes');
 const loadsRouter = require('./routes/api/load.routes');
 const meRouter = require('./routes/api/me.routes');
+const usersRouter = require('./routes/api/users.routes');
 const authMiddleware = require('./routes/middleware/auth');
 const requireRole = require('./routes/middleware/requireUserRole');
 const mongoose = require('mongoose');
@@ -28,6 +29,7 @@ app.get('/', (req, res) => {
 app.use('/api', authRouter);
 
 app.use(authMiddleware);
+app.use('/api/users', usersRouter);
 app.use('/api/me', meRouter);
 app.use('/api/trucks', requireRole(DRIVER), trucksRouter);
 app.use('/api/loads', requireRole(SHIPPER), loadsRouter);
