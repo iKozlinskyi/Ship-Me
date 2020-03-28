@@ -1,5 +1,7 @@
 const Driver = require('../model/driver/driver.model');
 const Truck = require('../model/truck/truck.model');
+const Load = require('../model/load/load.model');
+
 const {
   USER_LACKS_AUTHORITY,
   NO_TRUCK_ASSIGNED,
@@ -12,6 +14,11 @@ class DriverService {
   async assignTruck(driverId, truckId) {
     const newTruck = await Truck.findById(truckId);
     const driver = await Driver.findById(driverId).populate('truck').exec();
+
+    if (!driver.equals(newTruck.createdBy)) {
+      throw new Error(USER_LACKS_AUTHORITY);
+    }
+
     const oldTruck = driver.truck;
 
     if (oldTruck) {
@@ -19,11 +26,6 @@ class DriverService {
     }
     await newTruck.update({assignedTo: driver});
     await driver.update({truck: newTruck});
-
-
-    if (!driver.equals(newTruck.createdBy)) {
-      throw new Error(USER_LACKS_AUTHORITY);
-    }
 
     return Truck.findById(newTruck);
   }
@@ -50,6 +52,17 @@ class DriverService {
     }
 
     return assignedTruck;
+  }
+
+  async assignLoad(driverId, loadId) {
+    const newLoad = await Load.findById(loadId);
+    const driver =
+        await Driver.findById(driverId).populate('assignedLoad').exec();
+
+    await newLoad.update({assignedTo: driver});
+    await driver.update({assignedLoad: newLoad});
+
+    return Driver.findById(driverId);
   }
 }
 
