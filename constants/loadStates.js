@@ -1,5 +1,5 @@
-const R_TO_PICK_UP = 'En Route to Pick Up';
+const ROUTE_TO_PICK_UP = 'En Route to Pick Up';
 
 module.exports = {
-  R_TO_PICK_UP,
+  ROUTE_TO_PICK_UP,
 };

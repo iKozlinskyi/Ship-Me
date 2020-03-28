@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
+const {ROUTE_TO_PICK_UP} = require('../../constants/loadStates');
 const {SHIPPER, DRIVER} = require('../../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
   status: {type: String, required: true},
-  state: String,
+  state: {
+    type: String,
+    enum: [ROUTE_TO_PICK_UP],
+  },
   dimensions: {
     width: {type: Number, required: true},
     height: {type: Number, required: true},
