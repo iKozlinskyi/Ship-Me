@@ -6,6 +6,18 @@ const authService = require('../../service/AuthService');
 const requireRole = require('../middleware/requireUserRole');
 const driverService = require('../../service/DriverService');
 const {DRIVER} = require('../../constants/userRoles');
+const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
+
+
+router.param('userId', (req, res, next) => {
+  const {userId} = req.params;
+  const authUser = req.user;
+
+  if (userId !== authUser._id.toString()) {
+    return res.status(403).json({error: USER_LACKS_AUTHORITY});
+  }
+  next();
+});
 
 router.post('/users', async (req, res) => {
   const {username, password, role} = req.body;
@@ -23,7 +35,7 @@ router.post('/users', async (req, res) => {
 
 // This looks inconsistent.
 // TODO: ask what endpoint should be used
-router.post('/:driverId/assignedTrucks',
+router.post('/:userId/assignedTrucks',
     requireRole(DRIVER),
     async (req, res) => {
       const truckId = req.params.id;
@@ -40,9 +52,8 @@ router.post('/:driverId/assignedTrucks',
       }
     });
 
-// Works even if userId is not valid
-// TODO: check this
-router.get('/:driverId/assignedTrucks',
+
+router.get('/:userId/assignedTrucks',
     requireRole(DRIVER),
     async (req, res) => {
       const driver = req.user;
@@ -57,9 +68,8 @@ router.get('/:driverId/assignedTrucks',
       }
     });
 
-// Works even if userId is not valid
-// TODO: check this
-router.get('/:driverId/assignedLoads',
+
+router.get('/:userId/assignedLoads',
     requireRole(DRIVER),
     async (req, res) => {
       const driver = req.user;
