@@ -55,10 +55,10 @@ class TruckService {
     const foundTrucks = await Truck.aggregate([
       {
         $match: {
+          'status': IS,
           'assignedTo': {$exists: true},
           'dimensions.width': {$gte: load.dimensions.width},
           'maxPayload': {$gte: load.payload},
-
         },
       },
       {
