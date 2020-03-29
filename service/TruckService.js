@@ -58,6 +58,8 @@ class TruckService {
           'status': IS,
           'assignedTo': {$exists: true},
           'dimensions.width': {$gte: load.dimensions.width},
+          'dimensions.length': {$gte: load.dimensions.length},
+          'dimensions.height': {$gte: load.dimensions.height},
           'maxPayload': {$gte: load.payload},
         },
       },
