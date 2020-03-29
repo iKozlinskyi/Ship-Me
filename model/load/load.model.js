@@ -1,12 +1,22 @@
 const mongoose = require('mongoose');
-const {ROUTE_TO_PICK_UP} = require('../../constants/loadStates');
+const {
+  ROUTE_TO_PICK_UP,
+  ARRIVED_TO_PICK_UP,
+  ROUTE_TO_DELIVERY,
+  ARRIVED_TO_DELIVERY,
+} = require('../../constants/loadStates');
 const {SHIPPER, DRIVER} = require('../../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
   status: {type: String, required: true},
   state: {
     type: String,
-    enum: [ROUTE_TO_PICK_UP],
+    enum: [
+      ROUTE_TO_PICK_UP,
+      ARRIVED_TO_PICK_UP,
+      ROUTE_TO_DELIVERY,
+      ARRIVED_TO_DELIVERY,
+    ],
   },
   dimensions: {
     width: {type: Number, required: true},
@@ -25,9 +35,17 @@ const loadSchema = new mongoose.Schema({
   },
   logs: [{
     message: String,
-    time: Date,
+    time: {
+      type: Date,
+      default: Date.now,
+    },
   }],
 });
+
+loadSchema.methods.addLog = async function(message) {
+  this.logs.push({message});
+  return this.save();
+};
 
 const Load = mongoose.model('Load', loadSchema);
 

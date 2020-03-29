@@ -60,6 +60,8 @@ class DriverService {
         await Driver.findById(driverId).populate('assignedLoad').exec();
 
     await newLoad.update({assignedTo: driver});
+    await newLoad.addLog(`Assigned to driver with id: ${driver._id}`);
+
     await driver.update({assignedLoad: newLoad});
 
     return Driver.findById(driverId);

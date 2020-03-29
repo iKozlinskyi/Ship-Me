@@ -25,9 +25,9 @@ class LoadService {
     return Load.findById(id);
   }
 
-  save(loadDto) {
-    const newLoad = Load.create(loadDto);
-    return newLoad;
+  async save(loadDto) {
+    const newLoad = await Load.create(loadDto);
+    return newLoad.addLog('Load created');
   }
 
   removeById(id) {
@@ -39,22 +39,26 @@ class LoadService {
     return this.findById(id);
   }
 
-  async processLoad(loadDto) {
+  async updateLoadStatus(load, newStatus) {
+    load.status = newStatus;
+    return load.addLog(`Changed status to ${newStatus}`);
+  }
+
+  async processNewLoad(loadDto) {
     const newLoad = await this.createLoad(loadDto);
 
     const foundTruck = await truckService.findTruckForLoad(newLoad);
 
     if (!foundTruck) {
-      await newLoad.update({status: NEW});
+      await this.updateLoadStatus(newLoad, NEW);
       return this.findById(newLoad);
     }
 
     await foundTruck.update({status: OL});
-    await newLoad.update({state: ROUTE_TO_PICK_UP});
-
     const assignedDriverId = foundTruck.assignedTo;
 
     await driverService.assignLoad(assignedDriverId, newLoad._id);
+    await this.updateLoadStatus(newLoad, ROUTE_TO_PICK_UP);
     return Load.findById(newLoad);
   }
 
@@ -63,17 +67,25 @@ class LoadService {
     // TODO: clarify the status change for load
     const newLoad = await this.save(loadDto);
 
-    await newLoad.update({status: POSTED});
+    await this.updateLoadStatus(newLoad, POSTED);
+
     return Load.findById(newLoad);
   }
 
   async finishDelivery(load) {
     await Load.findByIdAndUpdate(load._id, {status: SHIPPED});
 
-    const populatedLoad = await Load.findById(load._id).populate('assignedTo');
+    const updatedLoad = await Load.findById(load._id);
+    await updatedLoad.addLog(`Change status to: ${SHIPPED}`);
+
+    const populatedLoad =
+        await updatedLoad.populate('assignedTo').execPopulate();
     const assignedDriver = populatedLoad.assignedTo;
 
-    await populatedLoad.update({$unset: {assignedTo: 1}});
+    // Not sure if I need to save connection between driver
+    // and load after successful shipment
+    // await populatedLoad.update({$unset: {assignedTo: 1}});
+
     await assignedDriver.update({$unset: {assignedLoad: 1}});
 
     const truckId = assignedDriver.truck;
@@ -93,7 +105,9 @@ class LoadService {
   }
 
   async performLoadStateChange(load, newState) {
-    await Load.findByIdAndUpdate(load._id, {state: newState});
+    const updatedLoad =
+        await Load.findByIdAndUpdate(load._id, {state: newState});
+    await updatedLoad.addLog(`Change load state to: ${newState}`);
 
     if (newState === ARRIVED_TO_DELIVERY) {
       await this.finishDelivery(load);
