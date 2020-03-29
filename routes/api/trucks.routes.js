@@ -30,7 +30,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const truckData = truckTypesMap[req.body.type];
+  const truckData = truckTypesMap[req.body.type] || req.body;
   truckData.createdBy = req.user._id;
 
   try {

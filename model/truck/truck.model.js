@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const {
+  handleTruckCollectionUpdated,
+} = require('../../jobs/handleTruckCollectionUpdated');
 const {OL, IS} = require('../../constants/truckStatuses');
 const {DRIVER} = require('../../constants/userRoles');
 
@@ -24,6 +27,9 @@ const truckSchema = new mongoose.Schema({
     ref: DRIVER,
   },
 });
+
+// TODO: Calling higher-level abstraction from lower-level - is it ok?
+truckSchema.post('save', handleTruckCollectionUpdated);
 
 const Truck = mongoose.model('Truck', truckSchema);
 

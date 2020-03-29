@@ -37,9 +37,13 @@ class TruckService {
     if (truck.status === OL) {
       throw new Error(CANNOT_CHANGE_DATA_OL);
     }
-    await Truck.findByIdAndUpdate(id, editedTruckData);
 
-    return this.findById(id);
+    await truck.update(editedTruckData).exec();
+    // This is done to trigger 'save' middleware
+    const updTruck = await Truck.findById(truck);
+    await updTruck.save();
+
+    return updTruck;
   }
 
   async findTruckForLoad(load) {
@@ -64,7 +68,7 @@ class TruckService {
         },
       },
       {
-        $addFields: {
+        $project: {
           capacityIndex: {
             $multiply: [
               '$dimensions.length',
@@ -81,15 +85,14 @@ class TruckService {
       {
         $limit: 1,
       },
-      {
-        $project: {
-          capacityIndex: 0,
-        },
-      },
     ]);
 
     // the truck is found again to ensure its methods - to cast it to document
     return foundTrucks.length > 0 ? this.findById(foundTrucks[0]._id) : null;
+  }
+
+  isTruckAvailableForWork(truck) {
+    return truck.status === IS && !!truck.assignedTo;
   }
 }
 

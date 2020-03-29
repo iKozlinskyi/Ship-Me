@@ -44,6 +44,15 @@ class LoadService {
     return load.addLog(`Changed status to ${newStatus}`);
   }
 
+  async connectTruckAndLoad(truck, load) {
+    await this.updateLoadStatus(load, POSTED);
+    await truck.update({status: OL});
+    const assignedDriverId = truck.assignedTo;
+
+    await driverService.assignLoad(assignedDriverId, load._id);
+    await this.updateLoadStatus(load, ROUTE_TO_PICK_UP);
+  }
+
   async processNewLoad(loadDto) {
     const newLoad = await this.createLoad(loadDto);
 
@@ -51,14 +60,10 @@ class LoadService {
 
     if (!foundTruck) {
       await this.updateLoadStatus(newLoad, NEW);
-      return this.findById(newLoad);
+    } else {
+      await this.connectTruckAndLoad(foundTruck, newLoad);
     }
 
-    await foundTruck.update({status: OL});
-    const assignedDriverId = foundTruck.assignedTo;
-
-    await driverService.assignLoad(assignedDriverId, newLoad._id);
-    await this.updateLoadStatus(newLoad, ROUTE_TO_PICK_UP);
     return Load.findById(newLoad);
   }
 
@@ -114,6 +119,38 @@ class LoadService {
     }
 
     return Load.findById(load._id);
+  }
+
+  async findLoadForTruck(truck) {
+    /**
+     *  Finds suitable load which was created first - so it works like a que
+     *  (FIFO)
+     */
+    const foundLoads = await Load.aggregate([
+      {
+        $match: {
+          'status': NEW,
+          'dimensions.width': {$lte: truck.dimensions.width},
+          'dimensions.length': {$lte: truck.dimensions.length},
+          'dimensions.height': {$lte: truck.dimensions.height},
+          'payload': {$lte: truck.maxPayload},
+        },
+      },
+      {
+        $project: {
+          'createdAt': {$arrayElemAt: ['$logs.time', 0]},
+        },
+      },
+      {
+        $sort: {'createdAt': 1},
+      },
+      {
+        $limit: 1,
+      },
+    ]);
+
+    // Rehydrate the load doc
+    return foundLoads.length > 0 ? this.findById(foundLoads[0]._id) : null;
   }
 }
 

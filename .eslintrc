@@ -17,6 +17,7 @@
     "rules": {
         "require-jsdoc": "off",
         "new-cap": "off",
-        "no-console": "warn"
+        "no-console": "warn",
+        "linebreak-style": "off"
     }
 }
