@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
+const winston = require('./config/winston');
 const config = require('config');
 const trucksRouter = require('./routes/api/trucks.routes');
 const authRouter = require('./routes/api/auth.routes');
@@ -19,6 +21,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.on('open', console.log.bind(console, 'MongoDB connected successfully'));
 
+app.use(morgan('combined', {stream: winston.stream}));
 app.use(express.json());
 const port = config.get('appPort');
 
