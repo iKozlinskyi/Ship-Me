@@ -39,12 +39,9 @@ class LoadService {
     return this.findById(id);
   }
 
-  async createLoad(loadDto) {
-    // 2 requests to db - this is not good.
-    // TODO: clarify the status change for load
-    const newLoad = await this.save(loadDto);
+  async processLoad(loadDto) {
+    const newLoad = await this.createLoad(loadDto);
 
-    await newLoad.update({status: POSTED});
     const foundTruck = await truckService.findTruckForLoad(newLoad);
 
     if (!foundTruck) {
@@ -57,7 +54,17 @@ class LoadService {
 
     const assignedDriverId = foundTruck.assignedTo;
 
-    return await driverService.assignLoad(assignedDriverId, newLoad._id);
+    await driverService.assignLoad(assignedDriverId, newLoad._id);
+    return Load.findById(newLoad);
+  }
+
+  async createLoad(loadDto) {
+    // 2 requests to db - this is not good.
+    // TODO: clarify the status change for load
+    const newLoad = await this.save(loadDto);
+
+    await newLoad.update({status: POSTED});
+    return Load.findById(newLoad);
   }
 
   async finishDelivery(load) {

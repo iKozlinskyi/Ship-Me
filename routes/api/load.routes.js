@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
   };
 
   try {
-    const savedLoad = await loadService.createLoad(load);
+    const savedLoad = await loadService.processLoad(load);
 
     res.status(201).json(savedLoad);
   } catch (err) {
