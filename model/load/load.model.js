@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const {
+  NEW,
+  POSTED,
+  SHIPPED,
+} = require('../../constants/loadStatuses');
+const {
   ROUTE_TO_PICK_UP,
   ARRIVED_TO_PICK_UP,
   ROUTE_TO_DELIVERY,
@@ -8,7 +13,15 @@ const {
 const {SHIPPER, DRIVER} = require('../../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
-  status: {type: String, required: true},
+  status: {
+    type: String,
+    enum: [
+      NEW,
+      POSTED,
+      SHIPPED,
+    ],
+    required: true,
+  },
   state: {
     type: String,
     enum: [
