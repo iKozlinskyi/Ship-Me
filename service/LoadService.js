@@ -1,5 +1,10 @@
 const Load = require('../model/load.model');
-const {NEW, POSTED, SHIPPED} = require('../constants/loadStatuses');
+const {
+  NEW,
+  POSTED,
+  ASSIGNED,
+  SHIPPED,
+} = require('../constants/loadStatuses');
 const truckService = require('./TruckService');
 const driverService = require('./DriverService');
 const Truck = require('../model/truck.model');
@@ -45,12 +50,16 @@ class LoadService {
   }
 
   async connectTruckAndLoad(truck, load) {
-    await this.updateLoadStatus(load, POSTED);
+    if (load.status === NEW) {
+      await this.updateLoadStatus(load, POSTED);
+    }
+
     await truck.update({status: OL});
     const assignedDriverId = truck.assignedTo;
 
     await driverService.assignLoad(assignedDriverId, load._id);
-    await this.updateLoadStatus(load, ROUTE_TO_PICK_UP);
+    await this.updateLoadStatus(load, ASSIGNED);
+    await this.performLoadStateChange(load, ROUTE_TO_PICK_UP);
   }
 
   async processNewLoad(loadDto) {

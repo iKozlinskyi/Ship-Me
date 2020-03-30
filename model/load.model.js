@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const {
   NEW,
   POSTED,
+  ASSIGNED,
   SHIPPED,
 } = require('../constants/loadStatuses');
 const {
@@ -18,6 +19,7 @@ const loadSchema = new mongoose.Schema({
     enum: [
       NEW,
       POSTED,
+      ASSIGNED,
       SHIPPED,
     ],
     required: true,

@@ -9,6 +9,8 @@ const LOAD_NOT_FOUND_BY_ID = 'Cannot find load with given id';
 const NO_LOAD_ASSIGNED = 'Driver does not have a load assigned';
 const NO_TRUCK_ASSIGNED = 'Driver does not have a truck assigned';
 const CANNOT_CHANGE_DATA_OL = 'Not possible to change truck data while on load';
+const CANNOT_REASSIGN_TRUCK_OL =
+    'Not possible change assigned truck while on load';
 const WRONG_OLD_PASSWORD = 'Wrong old password';
 const TOKEN_NOT_VALID = 'Token not valid';
 
@@ -24,6 +26,7 @@ module.exports = {
   NO_LOAD_ASSIGNED,
   NO_TRUCK_ASSIGNED,
   CANNOT_CHANGE_DATA_OL,
+  CANNOT_REASSIGN_TRUCK_OL,
   WRONG_OLD_PASSWORD,
   TOKEN_NOT_VALID,
 };

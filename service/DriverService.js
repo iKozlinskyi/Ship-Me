@@ -1,7 +1,11 @@
 const Driver = require('../model/driver.model');
 const Truck = require('../model/truck.model');
 const Load = require('../model/load.model');
-
+const truckService = require('./TruckService');
+const {
+  CANNOT_CHANGE_DATA_OL,
+  CANNOT_REASSIGN_TRUCK_OL,
+} = require('../constants/errors');
 const {
   USER_LACKS_AUTHORITY,
   NO_TRUCK_ASSIGNED,
@@ -14,6 +18,7 @@ class DriverService {
   async assignTruck(driverId, truckId) {
     const newTruck = await Truck.findById(truckId);
     const driver = await Driver.findById(driverId).populate('truck').exec();
+
     if (!driver.equals(newTruck.createdBy)) {
       throw new Error(USER_LACKS_AUTHORITY);
     }
@@ -21,7 +26,13 @@ class DriverService {
     const oldTruck = driver.truck;
 
     if (oldTruck) {
-      await oldTruck.update({$unset: {assignedTo: ''}});
+      try {
+        await truckService.updateById(oldTruck.id, {$unset: {assignedTo: ''}});
+      } catch (err) {
+        if (err.message === CANNOT_CHANGE_DATA_OL) {
+          throw new Error(CANNOT_REASSIGN_TRUCK_OL);
+        }
+      }
     }
     await driver.update({truck: newTruck});
     newTruck.assignedTo = driver;
