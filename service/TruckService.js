@@ -2,6 +2,8 @@ const Truck = require('../model/truck.model');
 const {
   CANNOT_CHANGE_DATA_OL,
   CANNOT_CHANGE_DATA_ASSIGNED_TRUCK,
+  TRUCK_NOT_FOUND_BY_ID,
+  USER_LACKS_AUTHORITY,
 } = require('../constants/errors');
 const {IS} = require('../constants/truckStatuses');
 
@@ -18,7 +20,7 @@ class TruckService {
     const foundTruck = await Truck.findById(id);
 
     if (!foundTruck) {
-      throw new Error();
+      throw new Error(TRUCK_NOT_FOUND_BY_ID);
     }
 
     return foundTruck;
@@ -100,6 +102,12 @@ class TruckService {
 
   isTruckAvailableForWork(truck) {
     return truck.status === IS && !!truck.assignedTo;
+  }
+
+  checkDriverReadWriteRights(driver, truck) {
+    if (!driver.equals(truck.createdBy)) {
+      throw new Error(USER_LACKS_AUTHORITY);
+    }
   }
 }
 

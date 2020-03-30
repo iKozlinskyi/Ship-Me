@@ -1,5 +1,4 @@
 const truckService = require('../../service/TruckService');
-const {TRUCK_NOT_FOUND_BY_ID} = require('./../../constants/errors');
 const {TRUCK_REMOVED_SUCCESSFULLY} = require('../../constants/messages');
 const truckTypesMap = require('../../constants/truckTypesMap');
 
@@ -8,13 +7,16 @@ const router = express.Router();
 
 router.param('id', async (req, res, next) => {
   const {id} = req.params;
+  const driver = req.user;
 
   try {
     req.truck = await truckService.findById(id);
+    truckService.checkDriverReadWriteRights(driver, req.truck);
     next();
   } catch (err) {
+    // TODO: wrong status codes - unauthorized error can also be triggered
     // eslint-disable-next-line new-cap
-    return res.status(404).json({error: TRUCK_NOT_FOUND_BY_ID});
+    return res.status(404).json({error: err.message});
   }
 });
 
