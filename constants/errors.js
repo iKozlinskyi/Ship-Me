@@ -10,6 +10,7 @@ const NO_LOAD_ASSIGNED = 'Driver does not have a load assigned';
 const NO_TRUCK_ASSIGNED = 'Driver does not have a truck assigned';
 const CANNOT_CHANGE_DATA_OL = 'Not possible to change truck data while on load';
 const WRONG_OLD_PASSWORD = 'Wrong old password';
+const TOKEN_NOT_VALID = 'Token not valid';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -24,4 +25,5 @@ module.exports = {
   NO_TRUCK_ASSIGNED,
   CANNOT_CHANGE_DATA_OL,
   WRONG_OLD_PASSWORD,
+  TOKEN_NOT_VALID,
 };

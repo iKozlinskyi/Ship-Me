@@ -3,6 +3,8 @@ const config = require('config');
 const salt = config.get('jwtSalt');
 const userService = require('./UserService');
 const moment = require('moment');
+const {TOKEN_NOT_VALID} = require('../constants/errors');
+const {decodedJwtSchema} = require('../dto/validation/decodedJwtSchema');
 
 
 class AuthService {
@@ -11,8 +13,14 @@ class AuthService {
     return jwt.sign(JSON.stringify({username, role, iat}), salt);
   }
 
-  async validateToken(token) {
-    const {iat, username} = jwt.verify(token, salt);
+  async validateUser(token) {
+    const decodedToken = jwt.verify(token, salt);
+    const {error} = decodedJwtSchema.validate(decodedToken);
+
+    if (error) {
+      throw new Error(TOKEN_NOT_VALID);
+    }
+    const {username, iat} = decodedToken;
     const foundUser = await userService.findByUsername(username);
 
     const isTokenExpired =
