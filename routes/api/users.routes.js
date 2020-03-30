@@ -19,7 +19,7 @@ router.param('userId', (req, res, next) => {
   const {userId} = req.params;
   const authUser = req.user;
 
-  if (userId !== authUser._id.toString()) {
+  if (userId !== authUser.id) {
     return res.status(403).json({error: USER_LACKS_AUTHORITY});
   }
   next();

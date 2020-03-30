@@ -8,6 +8,7 @@ const baseOptions = {
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  passwordLastChanged: {type: Date, default: Date.now},
 }, baseOptions);
 
 const User = mongoose.model('User', userSchema);

@@ -25,7 +25,7 @@ class UserService {
     return foundUser;
   }
 
-  async findByUsername(username) {
+  findByUsername(username) {
     return User.findOne({username}).select('-password');
   }
 
@@ -87,7 +87,10 @@ class UserService {
 
   async updateUserPassword(user, newPassword) {
     const hashedPassword = await this.encodePassword(newPassword);
-    await user.update({password: hashedPassword});
+    await user.update({
+      password: hashedPassword,
+      passwordLastChanged: Date.now(),
+    });
   }
 }
 
