@@ -25,16 +25,24 @@ class UserService {
     return foundUser;
   }
 
+  async findByUsername(username) {
+    return User.findOne({username}).select('-password');
+  }
+
   async createUserOfRole({username, password, role}) {
     await this.validateUserData(username, password);
 
     const UserModel = this.getUserModel(role);
     const hashedPassword = await this.encodePassword(password);
 
-    return UserModel.create({
+    const createdUser = await UserModel.create({
       username,
       password: hashedPassword,
     });
+    // To not expose encoded password to outer layer
+    delete createdUser.password;
+
+    return createdUser;
   }
 
 
@@ -61,20 +69,25 @@ class UserService {
 
   async changePassword(user, oldPassword, newPassword) {
     const editedUser = await User.findById(user.id);
+    const passwordsMatch =
+        await bcrypt.compare(oldPassword, editedUser.password);
 
-    if (editedUser.password !== oldPassword) {
+    if (!passwordsMatch) {
       throw new Error(WRONG_OLD_PASSWORD);
     }
 
-    editedUser.password = newPassword;
-
-    return editedUser.save();
+    await this.updateUserPassword(editedUser, newPassword);
   }
 
   encodePassword(password) {
     const saltRounds = config.get('saltRounds');
 
     return bcrypt.hash(password, saltRounds);
+  }
+
+  async updateUserPassword(user, newPassword) {
+    const hashedPassword = await this.encodePassword(newPassword);
+    await user.update({password: hashedPassword});
   }
 }
 

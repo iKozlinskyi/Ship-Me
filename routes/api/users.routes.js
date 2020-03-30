@@ -100,10 +100,9 @@ router.post(
       const {oldPassword, newPassword} = req.body;
 
       try {
-        const editedUser =
-            await userService.changePassword(user, oldPassword, newPassword);
+        await userService.changePassword(user, oldPassword, newPassword);
 
-        res.json(editedUser);
+        res.json({status: 'ok'});
       } catch (err) {
         res.status(400).send({error: err.message});
       }
