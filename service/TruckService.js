@@ -1,6 +1,9 @@
 const Truck = require('../model/truck.model');
-const {CANNOT_CHANGE_DATA_OL} = require('../constants/errors');
-const {IS, OL} = require('../constants/truckStatuses');
+const {
+  CANNOT_CHANGE_DATA_OL,
+  CANNOT_CHANGE_DATA_ASSIGNED_TRUCK,
+} = require('../constants/errors');
+const {IS} = require('../constants/truckStatuses');
 
 class TruckService {
   findAll() {
@@ -32,10 +35,14 @@ class TruckService {
   }
 
   async updateById(id, editedTruckData) {
-    const truck = await Truck.findById(id);
+    const truck = await Truck.findById(id).populate('createdBy');
+    const truckOwner = truck.createdBy;
 
-    if (truck.status === OL) {
+    if (truckOwner.assignedLoad) {
       throw new Error(CANNOT_CHANGE_DATA_OL);
+    }
+    if (truck.assignedTo) {
+      throw new Error(CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
     }
 
     await truck.update(editedTruckData).exec();
