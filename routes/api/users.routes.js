@@ -145,5 +145,13 @@ router.patch('/:userId/assignedLoads/:loadId',
       }
     });
 
+// TODO: removed user has to remove adjacent data: loads for shippers
+router.delete('/:userId', async (req, res) => {
+  const user = req.user;
+  await userService.remove(user);
+
+  res.status(200).json({status: 'User successfully removed'});
+});
+
 module.exports = router;
 

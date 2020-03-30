@@ -58,6 +58,10 @@ class UserService {
     }
   }
 
+  remove(user) {
+    return User.findByIdAndDelete(user);
+  }
+
   getUserModel(role) {
     switch (role) {
       case DRIVER:
