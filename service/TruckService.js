@@ -4,6 +4,7 @@ const {
   CANNOT_CHANGE_DATA_ASSIGNED_TRUCK,
   TRUCK_NOT_FOUND_BY_ID,
   USER_LACKS_AUTHORITY,
+  CANNOT_REMOVE_ASSIGNED_TRUCK,
 } = require('../constants/errors');
 const {IS} = require('../constants/truckStatuses');
 
@@ -32,8 +33,12 @@ class TruckService {
     return newTruck;
   }
 
-  removeById(id) {
-    Truck.findByIdAndDelete(id);
+  // TODO: check if user can delete trucks while he is on load
+  remove(truck) {
+    if (truck.assignedTo) {
+      throw new Error(CANNOT_REMOVE_ASSIGNED_TRUCK);
+    }
+    return Truck.findByIdAndDelete(truck);
   }
 
   async updateById(id, editedTruckData) {

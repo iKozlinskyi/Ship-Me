@@ -45,9 +45,13 @@ router.post('/', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-  const {id} = req.params;
+  const truck = req.truck;
 
-  await truckService.removeById(id);
+  try {
+    await truckService.remove(truck);
+  } catch (err) {
+    res.status(409).send({error: err.message});
+  }
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 

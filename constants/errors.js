@@ -13,6 +13,7 @@ const CANNOT_REASSIGN_TRUCK_OL =
     'Not possible change assigned truck while on load';
 const CANNOT_CHANGE_DATA_ASSIGNED_TRUCK =
     'Not possible to change assigned truck data';
+const CANNOT_REMOVE_ASSIGNED_TRUCK = 'Not possible to remove assigned truck';
 const WRONG_OLD_PASSWORD = 'Wrong old password';
 const TOKEN_NOT_VALID = 'Token not valid';
 
@@ -30,6 +31,7 @@ module.exports = {
   CANNOT_CHANGE_DATA_OL,
   CANNOT_REASSIGN_TRUCK_OL,
   CANNOT_CHANGE_DATA_ASSIGNED_TRUCK,
+  CANNOT_REMOVE_ASSIGNED_TRUCK,
   WRONG_OLD_PASSWORD,
   TOKEN_NOT_VALID,
 };
