@@ -4,7 +4,6 @@ const {
   CANNOT_CHANGE_DATA_ASSIGNED_TRUCK,
   TRUCK_NOT_FOUND_BY_ID,
   USER_LACKS_AUTHORITY,
-  CANNOT_REMOVE_ASSIGNED_TRUCK,
 } = require('../constants/errors');
 const {IS} = require('../constants/truckStatuses');
 
@@ -33,24 +32,14 @@ class TruckService {
     return newTruck;
   }
 
-  // TODO: check if user can delete trucks while he is on load
-  remove(truck) {
-    if (truck.assignedTo) {
-      throw new Error(CANNOT_REMOVE_ASSIGNED_TRUCK);
-    }
+  async remove(truck) {
+    await this.checkTruckCanBeModified(truck);
     return Truck.findByIdAndDelete(truck);
   }
 
   async updateById(id, editedTruckData) {
     const truck = await Truck.findById(id).populate('createdBy');
-    const truckOwner = truck.createdBy;
-
-    if (truckOwner.assignedLoad) {
-      throw new Error(CANNOT_CHANGE_DATA_OL);
-    }
-    if (truck.assignedTo) {
-      throw new Error(CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
-    }
+    await this.checkTruckCanBeModified(truck);
 
     await truck.update(editedTruckData).exec();
     // This is done to trigger 'save' middleware
@@ -112,6 +101,18 @@ class TruckService {
   checkDriverReadWriteRights(driver, truck) {
     if (!driver.equals(truck.createdBy)) {
       throw new Error(USER_LACKS_AUTHORITY);
+    }
+  }
+
+  async checkTruckCanBeModified(truck) {
+    const populatedTruck = await truck.populate('createdBy').execPopulate();
+    const truckOwner = populatedTruck.createdBy;
+
+    if (truckOwner.assignedLoad) {
+      throw new Error(CANNOT_CHANGE_DATA_OL);
+    }
+    if (populatedTruck.assignedTo) {
+      throw new Error(CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
     }
   }
 }
