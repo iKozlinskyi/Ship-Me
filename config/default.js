@@ -3,4 +3,5 @@ module.exports = {
   jwtSalt: 'secret',
   dbName: 'Ship-Me',
   mongoUrl: `mongodb://localhost:27017/Ship-Me`,
+  saltRounds: 5,
 };

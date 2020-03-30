@@ -21,10 +21,10 @@ router.post('/login', loginValidation, async (req, res) => {
 });
 
 router.post('/register', registerValidation, async (req, res) => {
-  const {username, password, role} = req.body;
+  const registerUserDto = req.body;
 
   try {
-    const user = await userService.createUserOfRole({username, password, role});
+    const user = await userService.createUserOfRole(registerUserDto);
     const token = authService.generateToken(user);
 
     res.json({token});

@@ -1,10 +1,10 @@
 const {
   USERNAME_TAKEN,
   WRONG_CREDENTIALS,
-  PASSWORD_BLANK,
-  USERNAME_BLANK,
   WRONG_OLD_PASSWORD,
 } = require('../constants/errors');
+const bcrypt = require('bcrypt');
+const config = require('config');
 
 const User = require('../model/user.model');
 const Driver = require('../model/driver.model');
@@ -13,9 +13,13 @@ const {SHIPPER, DRIVER} = require('../constants/userRoles');
 
 class UserService {
   async findByCredentials({username, password}) {
-    const foundUser = await User.findOne({username, password});
-
+    const foundUser = await User.findOne({username});
     if (!foundUser) {
+      throw new Error(WRONG_CREDENTIALS);
+    }
+
+    const passwordsMatch = await bcrypt.compare(password, foundUser.password);
+    if (!passwordsMatch) {
       throw new Error(WRONG_CREDENTIALS);
     }
     return foundUser;
@@ -24,11 +28,13 @@ class UserService {
   async createUserOfRole({username, password, role}) {
     await this.validateUserData(username, password);
 
-    const userModel = this.getUserModel(role);
+    const UserModel = this.getUserModel(role);
+    const hashedPassword = await this.encodePassword(password);
 
-    const savedUser = await userModel.create({username, password});
-    console.log(savedUser);
-    return savedUser;
+    return UserModel.create({
+      username,
+      password: hashedPassword,
+    });
   }
 
 
@@ -36,19 +42,11 @@ class UserService {
     return User.exists({username});
   }
 
-  async validateUserData(username, password) {
+  async validateUserData(username) {
     const isUsernameTaken = await this.isUsernameTaken(username);
 
     if (isUsernameTaken) {
       throw new Error(USERNAME_TAKEN);
-    }
-
-    if (!username) {
-      throw new Error(USERNAME_BLANK);
-    }
-
-    if (!password) {
-      throw new Error(PASSWORD_BLANK);
     }
   }
 
@@ -71,6 +69,12 @@ class UserService {
     editedUser.password = newPassword;
 
     return editedUser.save();
+  }
+
+  encodePassword(password) {
+    const saltRounds = config.get('saltRounds');
+
+    return bcrypt.hash(password, saltRounds);
   }
 }
 
