@@ -12,6 +12,7 @@
   "author": "Ihor Kozlinskyi",
   "license": "ISC",
   "dependencies": {
+    "celebrate": "^12.0.1",
     "config": "^3.3.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",

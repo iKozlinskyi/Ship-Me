@@ -1,6 +1,6 @@
-const Driver = require('../model/driver/driver.model');
-const Truck = require('../model/truck/truck.model');
-const Load = require('../model/load/load.model');
+const Driver = require('../model/driver.model');
+const Truck = require('../model/truck.model');
+const Load = require('../model/load.model');
 
 const {
   USER_LACKS_AUTHORITY,

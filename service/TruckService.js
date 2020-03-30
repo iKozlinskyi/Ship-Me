@@ -1,4 +1,4 @@
-const Truck = require('../model/truck/truck.model');
+const Truck = require('../model/truck.model');
 const {CANNOT_CHANGE_DATA_OL} = require('../constants/errors');
 const {IS, OL} = require('../constants/truckStatuses');
 

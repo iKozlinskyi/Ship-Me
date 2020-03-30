@@ -3,11 +3,12 @@ const {
   WRONG_CREDENTIALS,
   PASSWORD_BLANK,
   USERNAME_BLANK,
+  WRONG_OLD_PASSWORD,
 } = require('../constants/errors');
 
-const User = require('../model/user/user.model');
-const Driver = require('../model/driver/driver.model');
-const Shipper = require('../model/shipper/shipper.model');
+const User = require('../model/user.model');
+const Driver = require('../model/driver.model');
+const Shipper = require('../model/shipper.model');
 const {SHIPPER, DRIVER} = require('../constants/userRoles');
 
 class UserService {
@@ -58,6 +59,18 @@ class UserService {
       case SHIPPER:
         return Shipper;
     }
+  }
+
+  async changePassword(user, oldPassword, newPassword) {
+    const editedUser = await User.findById(user.id);
+
+    if (editedUser.password !== oldPassword) {
+      throw new Error(WRONG_OLD_PASSWORD);
+    }
+
+    editedUser.password = newPassword;
+
+    return editedUser.save();
   }
 }
 

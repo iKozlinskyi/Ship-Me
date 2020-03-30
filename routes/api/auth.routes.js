@@ -4,8 +4,10 @@ const router = express.Router();
 const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
 const {WRONG_CREDENTIALS} = require('../../constants/errors');
+const registerValidation = require('../../dto/validation/registerValidation');
+const loginValidation = require('../../dto/validation/loginValidation');
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidation, async (req, res) => {
   const userData = req.body;
 
   try {
@@ -18,7 +20,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidation, async (req, res) => {
   const {username, password, role} = req.body;
 
   try {

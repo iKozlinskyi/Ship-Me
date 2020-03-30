@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const User = require('../user/user.model');
-const {SHIPPER} = require('../../constants/userRoles');
+const User = require('./user.model');
+const {SHIPPER} = require('../constants/userRoles');
 
 const shipperSpecificSchema = new mongoose.Schema({
   createdLoads: [{

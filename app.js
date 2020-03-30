@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const winston = require('./config/winston');
+const {errors} = require('celebrate');
 const config = require('config');
 const trucksRouter = require('./routes/api/trucks.routes');
 const authRouter = require('./routes/api/auth.routes');
@@ -37,6 +38,7 @@ app.use('/api/me', meRouter);
 app.use('/api/trucks', requireRole(DRIVER), trucksRouter);
 app.use('/api/loads', requireRole(SHIPPER), loadsRouter);
 
+app.use(errors());
 app.listen(port, () => {
   console.log('App is listening on port %o', port);
 });

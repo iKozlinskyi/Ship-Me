@@ -11,6 +11,8 @@ const {
   USER_LACKS_AUTHORITY,
   LOAD_NOT_FOUND_BY_ID,
 } = require('../../constants/errors');
+const changePasswordValidation =
+    require('../../dto/validation/changePasswordValidation');
 
 
 router.param('userId', (req, res, next) => {
@@ -87,6 +89,23 @@ router.get('/:userId/assignedTrucks',
         res.json({assignedTruck});
       } catch (err) {
         res.status(404).send({error: err.message});
+      }
+    });
+
+router.post(
+    '/:userId/password',
+    changePasswordValidation,
+    async (req, res) => {
+      const user = req.user;
+      const {oldPassword, newPassword} = req.body;
+
+      try {
+        const editedUser =
+            await userService.changePassword(user, oldPassword, newPassword);
+
+        res.json(editedUser);
+      } catch (err) {
+        res.status(400).send({error: err.message});
       }
     });
 

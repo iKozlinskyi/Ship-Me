@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const User = require('../user/user.model');
-const {DRIVER} = require('../../constants/userRoles');
+const User = require('./user.model');
+const {DRIVER} = require('../constants/userRoles');
 
 const driverSpecificSchema = new mongoose.Schema({
   truck: {

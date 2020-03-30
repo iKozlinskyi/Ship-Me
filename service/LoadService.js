@@ -1,8 +1,8 @@
-const Load = require('../model/load/load.model');
+const Load = require('../model/load.model');
 const {NEW, POSTED, SHIPPED} = require('../constants/loadStatuses');
 const truckService = require('./TruckService');
 const driverService = require('./DriverService');
-const Truck = require('../model/truck/truck.model');
+const Truck = require('../model/truck.model');
 const {IS} = require('../constants/truckStatuses');
 const {USER_LACKS_AUTHORITY} = require('../constants/errors');
 const {DRIVER, SHIPPER} = require('../constants/userRoles');

@@ -3,14 +3,14 @@ const {
   NEW,
   POSTED,
   SHIPPED,
-} = require('../../constants/loadStatuses');
+} = require('../constants/loadStatuses');
 const {
   ROUTE_TO_PICK_UP,
   ARRIVED_TO_PICK_UP,
   ROUTE_TO_DELIVERY,
   ARRIVED_TO_DELIVERY,
-} = require('../../constants/loadStates');
-const {SHIPPER, DRIVER} = require('../../constants/userRoles');
+} = require('../constants/loadStates');
+const {SHIPPER, DRIVER} = require('../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
   status: {

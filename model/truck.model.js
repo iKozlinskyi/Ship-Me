@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const {
   handleTruckCollectionUpdated,
-} = require('../../jobs/handleTruckCollectionUpdated');
-const {OL, IS} = require('../../constants/truckStatuses');
-const {DRIVER} = require('../../constants/userRoles');
+} = require('../jobs/handleTruckCollectionUpdated');
+const {OL, IS} = require('../constants/truckStatuses');
+const {DRIVER} = require('../constants/userRoles');
 
 const truckSchema = new mongoose.Schema({
   status: {
