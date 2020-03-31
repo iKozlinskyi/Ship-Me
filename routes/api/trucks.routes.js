@@ -15,7 +15,6 @@ router.param('id', async (req, res, next) => {
     next();
   } catch (err) {
     // TODO: wrong status codes - unauthorized error can also be triggered
-    // eslint-disable-next-line new-cap
     return res.status(404).json({error: err.message});
   }
 });

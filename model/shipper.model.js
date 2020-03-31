@@ -9,6 +9,6 @@ const shipperSpecificSchema = new mongoose.Schema({
   }],
 });
 
-const Driver = User.discriminator(SHIPPER, shipperSpecificSchema);
+const Shipper = User.discriminator(SHIPPER, shipperSpecificSchema);
 
-module.exports = Driver;
+module.exports = Shipper;

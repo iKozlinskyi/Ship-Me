@@ -8,14 +8,16 @@ const {
 const truckService = require('./TruckService');
 const driverService = require('./DriverService');
 const Truck = require('../model/truck.model');
-const {IS} = require('../constants/truckStatuses');
-const {USER_LACKS_AUTHORITY} = require('../constants/errors');
+const {IS, OL} = require('../constants/truckStatuses');
+const {
+  USER_LACKS_AUTHORITY,
+  CANNOT_EDIT_NOT_NEW_LOAD,
+} = require('../constants/errors');
 const {DRIVER, SHIPPER} = require('../constants/userRoles');
 const {
   ROUTE_TO_PICK_UP,
   ARRIVED_TO_DELIVERY,
 } = require('../constants/loadStates');
-const {OL} = require('../constants/truckStatuses');
 
 class LoadService {
   findAll() {
@@ -35,13 +37,21 @@ class LoadService {
     return newLoad.addLog('Load created');
   }
 
-  removeById(id) {
-    Load.findByIdAndDelete(id);
+  remove(load) {
+    if (load.status !== NEW) {
+      throw new Error(CANNOT_EDIT_NOT_NEW_LOAD);
+    }
+
+    return Load.findByIdAndDelete(load);
   }
 
-  async updateById(id, editedLoadData) {
-    await Load.findByIdAndUpdate(id, editedLoadData);
-    return this.findById(id);
+  async update(load, editedLoadData) {
+    if (load.status !== NEW) {
+      throw new Error(CANNOT_EDIT_NOT_NEW_LOAD);
+    }
+
+    await Load.findByIdAndUpdate(load, editedLoadData);
+    return this.findById(load);
   }
 
   async updateLoadStatus(load, newStatus) {
@@ -112,7 +122,7 @@ class LoadService {
       case DRIVER:
         return load.equals(user.assignedLoad);
       case SHIPPER:
-        return user.createdLoads.includes(load._id);
+        return user.equals(load.createdBy);
       default:
         throw new Error(USER_LACKS_AUTHORITY);
     }

@@ -16,6 +16,8 @@ const CANNOT_CHANGE_DATA_ASSIGNED_TRUCK =
 const CANNOT_REMOVE_ASSIGNED_TRUCK = 'Not possible to remove assigned truck';
 const WRONG_OLD_PASSWORD = 'Wrong old password';
 const TOKEN_NOT_VALID = 'Token not valid';
+const CANNOT_EDIT_NOT_NEW_LOAD =
+    'Not possible to edit any load with status other than "NEW"';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -34,4 +36,5 @@ module.exports = {
   CANNOT_REMOVE_ASSIGNED_TRUCK,
   WRONG_OLD_PASSWORD,
   TOKEN_NOT_VALID,
+  CANNOT_EDIT_NOT_NEW_LOAD,
 };
