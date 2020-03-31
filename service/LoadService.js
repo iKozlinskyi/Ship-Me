@@ -20,6 +20,7 @@ const {
   LOAD_NOT_FOUND_BY_ID,
 } = require('../constants/loadStates');
 const HttpError = require('../utils/HttpError');
+const removeUndefinedKeys = require('../utils/removeUndefinedKeys');
 
 
 class LoadService {
@@ -27,8 +28,13 @@ class LoadService {
     return Load.find();
   }
 
-  findByCreatedUserId(userId) {
-    return Load.find({createdBy: userId});
+  findByCreatedUserId(userId, query, options) {
+    query = removeUndefinedKeys(query);
+
+    return Load.find({
+      createdBy: userId,
+      ...query,
+    }).setOptions(options);
   }
 
   async findById(id) {

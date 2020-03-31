@@ -20,8 +20,18 @@ router.param('loadId', async (req, res, next) => {
 });
 
 router.get('/', async (req, res) => {
-  const userId = req.user._id;
-  const loads = await loadService.findByCreatedUserId(userId);
+  const userId = req.user.id;
+  const match = {
+    status: req.query.status,
+  };
+
+  const pageNo = parseInt(req.query.pageNo) || 1;
+  const size = parseInt(req.query.size) || 0;
+  const options = {
+    limit: size,
+    skip: size * (pageNo - 1),
+  };
+  const loads = await loadService.findByCreatedUserId(userId, match, options);
 
   res.json({loads});
 });
