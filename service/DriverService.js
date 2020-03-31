@@ -2,12 +2,13 @@ const Driver = require('../model/driver.model');
 const Truck = require('../model/truck.model');
 const Load = require('../model/load.model');
 const truckService = require('./TruckService');
-const {CANNOT_REASSIGN_TRUCK_OL} = require('../constants/errors');
 const {
+  CANNOT_REASSIGN_TRUCK_OL,
   USER_LACKS_AUTHORITY,
   NO_TRUCK_ASSIGNED,
   NO_LOAD_ASSIGNED,
 } = require('../constants/errors');
+const HttpError = require('../utils/HttpError');
 
 class DriverService {
   // This doesn`t look good
@@ -17,10 +18,10 @@ class DriverService {
     const driver = await Driver.findById(driverId).populate('truck').exec();
 
     if (!driver.equals(newTruck.createdBy)) {
-      throw new Error(USER_LACKS_AUTHORITY);
+      throw new HttpError(403, USER_LACKS_AUTHORITY);
     }
     if (driver.assignedLoad) {
-      throw new Error(CANNOT_REASSIGN_TRUCK_OL);
+      throw new HttpError(409, CANNOT_REASSIGN_TRUCK_OL);
     }
 
     const oldTruck = driver.truck;
@@ -42,7 +43,7 @@ class DriverService {
     const {assignedLoad} = driver;
 
     if (!assignedLoad) {
-      throw new Error(NO_LOAD_ASSIGNED);
+      throw new HttpError(409, NO_LOAD_ASSIGNED);
     }
 
     return assignedLoad;
@@ -53,7 +54,7 @@ class DriverService {
     const assignedTruck = driver.truck;
 
     if (!assignedTruck) {
-      throw new Error(NO_TRUCK_ASSIGNED);
+      throw new HttpError(409, NO_TRUCK_ASSIGNED);
     }
 
     return assignedTruck;

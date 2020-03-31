@@ -14,8 +14,7 @@ router.param('id', async (req, res, next) => {
     truckService.checkDriverReadWriteRights(driver, req.truck);
     next();
   } catch (err) {
-    // TODO: wrong status codes - unauthorized error can also be triggered
-    return res.status(404).json({error: err.message});
+    return next(err);
   }
 });
 
@@ -30,7 +29,7 @@ router.get('/:id', (req, res) => {
   res.json(req.truck);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   const truckData = truckTypesMap[req.body.type] || req.body;
   truckData.createdBy = req.user._id;
 
@@ -39,22 +38,22 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(savedTruck);
   } catch (err) {
-    return res.status(400).json({error: err.message});
+    return next(err);
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   const truck = req.truck;
 
   try {
     await truckService.remove(truck);
   } catch (err) {
-    res.status(409).send({error: err.message});
+    return next(err);
   }
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   const {id} = req.params;
   const truckDto = req.body;
 
@@ -68,7 +67,7 @@ router.put('/:id', async (req, res) => {
 
     res.json(editedTruck);
   } catch (err) {
-    res.status(409).send({error: err.message});
+    return next(err);
   }
 });
 

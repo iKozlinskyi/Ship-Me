@@ -17,7 +17,10 @@ const {DRIVER, SHIPPER} = require('../constants/userRoles');
 const {
   ROUTE_TO_PICK_UP,
   ARRIVED_TO_DELIVERY,
+  LOAD_NOT_FOUND_BY_ID,
 } = require('../constants/loadStates');
+const HttpError = require('../utils/HttpError');
+
 
 class LoadService {
   findAll() {
@@ -29,7 +32,12 @@ class LoadService {
   }
 
   async findById(id) {
-    return Load.findById(id);
+    const foundLoad = await Load.findById(id);
+    if (!foundLoad) {
+      throw new HttpError(404, LOAD_NOT_FOUND_BY_ID);
+    }
+
+    return foundLoad;
   }
 
   async save(loadDto) {
@@ -39,7 +47,7 @@ class LoadService {
 
   remove(load) {
     if (load.status !== NEW) {
-      throw new Error(CANNOT_EDIT_NOT_NEW_LOAD);
+      throw new HttpError(409, CANNOT_EDIT_NOT_NEW_LOAD);
     }
 
     return Load.findByIdAndDelete(load);
@@ -47,14 +55,14 @@ class LoadService {
 
   async update(load, editedLoadData) {
     if (load.status !== NEW) {
-      throw new Error(CANNOT_EDIT_NOT_NEW_LOAD);
+      throw new HttpError(409, CANNOT_EDIT_NOT_NEW_LOAD);
     }
 
     await Load.findByIdAndUpdate(load, editedLoadData);
     return this.findById(load);
   }
 
-  async updateLoadStatus(load, newStatus) {
+  updateLoadStatus(load, newStatus) {
     load.status = newStatus;
     return load.addLog(`Changed status to ${newStatus}`);
   }
@@ -87,13 +95,8 @@ class LoadService {
   }
 
   async createLoad(loadDto) {
-    // 2 requests to db - this is not good.
-    // TODO: clarify the status change for load
     const newLoad = await this.save(loadDto);
-
-    await this.updateLoadStatus(newLoad, POSTED);
-
-    return Load.findById(newLoad);
+    return this.updateLoadStatus(newLoad, POSTED);
   }
 
   async finishDelivery(load) {
@@ -106,7 +109,7 @@ class LoadService {
         await updatedLoad.populate('assignedTo').execPopulate();
     const assignedDriver = populatedLoad.assignedTo;
 
-    // Not sure if I need to save connection between driver
+    // TODO: Not sure if I need to save connection between driver
     // and load after successful shipment
     // await populatedLoad.update({$unset: {assignedTo: 1}});
 
@@ -124,7 +127,7 @@ class LoadService {
       case SHIPPER:
         return user.equals(load.createdBy);
       default:
-        throw new Error(USER_LACKS_AUTHORITY);
+        throw new HttpError(403, USER_LACKS_AUTHORITY);
     }
   }
 

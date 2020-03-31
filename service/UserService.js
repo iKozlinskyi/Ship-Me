@@ -10,17 +10,19 @@ const User = require('../model/user.model');
 const Driver = require('../model/driver.model');
 const Shipper = require('../model/shipper.model');
 const {SHIPPER, DRIVER} = require('../constants/userRoles');
+const HttpError = require('../utils/HttpError');
+
 
 class UserService {
   async findByCredentials({username, password}) {
     const foundUser = await User.findOne({username});
     if (!foundUser) {
-      throw new Error(WRONG_CREDENTIALS);
+      throw new HttpError(400, WRONG_CREDENTIALS);
     }
 
     const passwordsMatch = await bcrypt.compare(password, foundUser.password);
     if (!passwordsMatch) {
-      throw new Error(WRONG_CREDENTIALS);
+      throw new HttpError(400, WRONG_CREDENTIALS);
     }
     return foundUser;
   }
@@ -54,7 +56,7 @@ class UserService {
     const isUsernameTaken = await this.isUsernameTaken(username);
 
     if (isUsernameTaken) {
-      throw new Error(USERNAME_TAKEN);
+      throw new HttpError(409, USERNAME_TAKEN);
     }
   }
 
@@ -77,7 +79,7 @@ class UserService {
         await bcrypt.compare(oldPassword, editedUser.password);
 
     if (!passwordsMatch) {
-      throw new Error(WRONG_OLD_PASSWORD);
+      throw new HttpError(400, WRONG_OLD_PASSWORD);
     }
 
     await this.updateUserPassword(editedUser, newPassword);

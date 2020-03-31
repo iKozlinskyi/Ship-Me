@@ -10,6 +10,7 @@ const loadsRouter = require('./routes/api/load.routes');
 const meRouter = require('./routes/api/me.routes');
 const usersRouter = require('./routes/api/users.routes');
 const authMiddleware = require('./routes/middleware/auth');
+const errorHandler = require('./routes/middleware/errorHandler');
 const requireRole = require('./routes/middleware/requireUserRole');
 const mongoose = require('mongoose');
 const {DRIVER, SHIPPER} = require('./constants/userRoles');
@@ -39,6 +40,7 @@ app.use('/api/trucks', requireRole(DRIVER), trucksRouter);
 app.use('/api/loads', requireRole(SHIPPER), loadsRouter);
 
 app.use(errors());
+app.use(errorHandler);
 app.listen(port, () => {
   console.log('App is listening on port %o', port);
 });

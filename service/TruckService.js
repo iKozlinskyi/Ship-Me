@@ -6,6 +6,7 @@ const {
   USER_LACKS_AUTHORITY,
 } = require('../constants/errors');
 const {IS} = require('../constants/truckStatuses');
+const HttpError = require('../utils/HttpError');
 
 class TruckService {
   findAll() {
@@ -20,7 +21,7 @@ class TruckService {
     const foundTruck = await Truck.findById(id);
 
     if (!foundTruck) {
-      throw new Error(TRUCK_NOT_FOUND_BY_ID);
+      throw new HttpError(404, TRUCK_NOT_FOUND_BY_ID);
     }
 
     return foundTruck;
@@ -100,7 +101,7 @@ class TruckService {
 
   checkDriverReadWriteRights(driver, truck) {
     if (!driver.equals(truck.createdBy)) {
-      throw new Error(USER_LACKS_AUTHORITY);
+      throw new HttpError(403, USER_LACKS_AUTHORITY);
     }
   }
 
@@ -109,10 +110,10 @@ class TruckService {
     const truckOwner = populatedTruck.createdBy;
 
     if (truckOwner.assignedLoad) {
-      throw new Error(CANNOT_CHANGE_DATA_OL);
+      throw new HttpError(409, CANNOT_CHANGE_DATA_OL);
     }
     if (populatedTruck.assignedTo) {
-      throw new Error(CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
+      throw new HttpError(409, CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
     }
   }
 }

@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
-const {WRONG_CREDENTIALS} = require('../../constants/errors');
 const registerValidation = require('../../dto/validation/registerValidation');
 const loginValidation = require('../../dto/validation/loginValidation');
 
-router.post('/login', loginValidation, async (req, res) => {
+router.post('/login', loginValidation, async (req, res, next) => {
   const userData = req.body;
 
   try {
@@ -16,11 +15,11 @@ router.post('/login', loginValidation, async (req, res) => {
 
     res.json({token});
   } catch (err) {
-    return res.status(401).json({status: WRONG_CREDENTIALS});
+    return next(err);
   }
 });
 
-router.post('/register', registerValidation, async (req, res) => {
+router.post('/register', registerValidation, async (req, res, next) => {
   const registerUserDto = req.body;
 
   try {
@@ -28,8 +27,8 @@ router.post('/register', registerValidation, async (req, res) => {
     const token = authService.generateToken(user);
 
     res.json({token});
-  } catch (error) {
-    return res.status(400).json({error: error.message});
+  } catch (err) {
+    return next(err);
   }
 });
 

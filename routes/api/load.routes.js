@@ -15,8 +15,7 @@ router.param('loadId', async (req, res, next) => {
     }
     next();
   } catch (err) {
-    // TODO: wrong status codes - unauthorized error can also be triggered
-    return res.status(404).json({error: err.message});
+    return next(err);
   }
 });
 
@@ -31,7 +30,7 @@ router.get('/:loadId', async (req, res) => {
   res.json({load: req.load});
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   const load = {
     ...req.body,
     createdBy: req.user._id,
@@ -43,29 +42,29 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(savedLoad);
   } catch (err) {
-    return res.status(400).json({error: err.message});
+    return next(err);
   }
 });
 
-router.delete('/:loadId', async (req, res) => {
+router.delete('/:loadId', async (req, res, next) => {
   try {
     await loadService.remove(req.load);
     res.json({status: 'Load successfully removed'});
   } catch (err) {
-    res.status(403).send({error: err.message});
+    return next(err);
   }
 });
 
-router.put('/:loadId', async (req, res) => {
+router.put('/:loadId', async (req, res, next) => {
   const load = req.load;
   const editedLoadData = req.body;
 
   try {
     const editedLoad = await loadService.update(load, editedLoadData);
 
-    res.status(201).json(editedLoad);
+    res.status(200).json(editedLoad);
   } catch (err) {
-    return res.status(403).json({error: err.message});
+    return next(err);
   }
 });
 

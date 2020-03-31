@@ -6,10 +6,7 @@ const requireRole = require('../middleware/requireUserRole');
 const driverService = require('../../service/DriverService');
 const loadService = require('../../service/LoadService');
 const {DRIVER} = require('../../constants/userRoles');
-const {
-  USER_LACKS_AUTHORITY,
-  LOAD_NOT_FOUND_BY_ID,
-} = require('../../constants/errors');
+const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
 const changePasswordValidation =
     require('../../dto/validation/changePasswordValidation');
 
@@ -38,11 +35,11 @@ router.param('loadId', async (req, res, next) => {
     req.load = foundLoad;
     next();
   } catch (err) {
-    return res.status(404).json({error: LOAD_NOT_FOUND_BY_ID});
+    return next(err);
   }
 });
 
-router.post('/users', async (req, res) => {
+router.post('/users', async (req, res, next) => {
   const {username, password, role} = req.body;
 
   try {
@@ -51,8 +48,8 @@ router.post('/users', async (req, res) => {
     const token = authService.generateToken(user);
 
     res.json({token});
-  } catch (error) {
-    return res.status(400).json({error: error.message});
+  } catch (err) {
+    return next(err);
   }
 });
 
@@ -61,7 +58,7 @@ router.post('/users', async (req, res) => {
 // check if truck exists. The truck id is passed in response body
 router.post('/:userId/assignedTrucks',
     requireRole(DRIVER),
-    async (req, res) => {
+    async (req, res, next) => {
       const {truckId} = req.body;
       const driverId = req.user._id;
 
@@ -71,14 +68,14 @@ router.post('/:userId/assignedTrucks',
 
         res.json(assignedTruck);
       } catch (err) {
-        res.status(403).json({error: err.message});
+        return next(err);
       }
     });
 
 
 router.get('/:userId/assignedTrucks',
     requireRole(DRIVER),
-    async (req, res) => {
+    async (req, res, next) => {
       const driver = req.user;
 
       try {
@@ -87,14 +84,14 @@ router.get('/:userId/assignedTrucks',
 
         res.json({assignedTruck});
       } catch (err) {
-        res.status(404).send({error: err.message});
+        return next(err);
       }
     });
 
 router.post(
     '/:userId/password',
     changePasswordValidation,
-    async (req, res) => {
+    async (req, res, next) => {
       const user = req.user;
       const {oldPassword, newPassword} = req.body;
 
@@ -103,21 +100,21 @@ router.post(
 
         res.json({status: 'ok'});
       } catch (err) {
-        res.status(400).send({error: err.message});
+        return next(err);
       }
     });
 
 
 router.get('/:userId/assignedLoads',
     requireRole(DRIVER),
-    async (req, res) => {
+    async (req, res, next) => {
       const driver = req.user;
 
       try {
         const assignedLoad = await driverService.getAssignedDriverLoad(driver);
         res.json({assignedLoad});
       } catch (err) {
-        res.status(404).send({error: err.message});
+        return next(err);
       }
     });
 
@@ -132,7 +129,7 @@ router.get('/:userId/assignedLoads',
  */
 router.patch('/:userId/assignedLoads/:loadId',
     requireRole(DRIVER),
-    async (req, res) => {
+    async (req, res, next) => {
       const load = req.load;
       const {loadState} = req.body;
       try {
@@ -141,7 +138,7 @@ router.patch('/:userId/assignedLoads/:loadId',
 
         res.json({load: updatedLoad});
       } catch (err) {
-        res.status(501).send({error: err.message});
+        return next(err);
       }
     });
 

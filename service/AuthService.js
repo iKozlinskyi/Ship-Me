@@ -3,8 +3,9 @@ const config = require('config');
 const salt = config.get('jwtSalt');
 const userService = require('./UserService');
 const moment = require('moment');
-const {TOKEN_NOT_VALID} = require('../constants/errors');
+const {TOKEN_NOT_VALID, TOKEN_EXPIRED} = require('../constants/errors');
 const {decodedJwtSchema} = require('../dto/validation/decodedJwtSchema');
+const HttpError = require('../utils/HttpError');
 
 
 class AuthService {
@@ -18,7 +19,7 @@ class AuthService {
     const {error} = decodedJwtSchema.validate(decodedToken);
 
     if (error) {
-      throw new Error(TOKEN_NOT_VALID);
+      throw new HttpError(400, TOKEN_NOT_VALID);
     }
     const {username, iat} = decodedToken;
     const foundUser = await userService.findByUsername(username);
@@ -28,7 +29,7 @@ class AuthService {
             iat, foundUser.passwordLastChanged);
 
     if (isTokenExpired) {
-      throw new Error();
+      throw new HttpError(400, TOKEN_EXPIRED);
     }
 
     return foundUser;
