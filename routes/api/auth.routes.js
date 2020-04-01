@@ -80,4 +80,15 @@ router.post('/register', registerValidation, async (req, res, next) => {
   }
 });
 
+router.post('/forgot', async (req, res, next) => {
+  const username = req.body.username;
+  try {
+    const forgot = await userService.resetPassword(username);
+    res.json({resp: forgot});
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
+
 module.exports = router;

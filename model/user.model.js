@@ -6,12 +6,17 @@ const baseOptions = {
 };
 
 const userSchema = new mongoose.Schema({
-  username: String,
-  password: String,
+  username: {type: String, unique: true, required: true},
+  email: {type: String, unique: true, required: true},
+  password: {type: String, required: true},
   passwordLastChanged: {type: Date, default: Date.now},
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  resetPasswordToken: {
+    token: String,
+    expirationDate: Date,
   },
 }, baseOptions);
 
