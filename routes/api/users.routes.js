@@ -104,6 +104,20 @@ router.post(
       }
     });
 
+router.post(
+    '/:userId/postedLoads',
+    async (req, res, next) => {
+      const {postedLoadId} = req.body;
+
+      try {
+        const postedLoad = await loadService.postLoad(postedLoadId);
+
+        res.json({postedLoad});
+      } catch (err) {
+        return next(err);
+      }
+    });
+
 
 router.get('/:userId/assignedLoads',
     requireRole(DRIVER),

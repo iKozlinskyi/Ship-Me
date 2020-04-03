@@ -19,6 +19,8 @@ const TOKEN_NOT_VALID = 'Token not valid';
 const TOKEN_EXPIRED = 'Token is expired';
 const CANNOT_EDIT_NOT_NEW_LOAD =
     'Not possible to edit any load with status other than "NEW"';
+const CANNOT_POST_NOT_NEW_LOAD =
+    'Not possible to post any load with status other than "NEW"';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -39,4 +41,5 @@ module.exports = {
   TOKEN_NOT_VALID,
   TOKEN_EXPIRED,
   CANNOT_EDIT_NOT_NEW_LOAD,
+  CANNOT_POST_NOT_NEW_LOAD,
 };

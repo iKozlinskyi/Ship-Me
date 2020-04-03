@@ -11,13 +11,14 @@ const Truck = require('../model/truck.model');
 const {IS, OL} = require('../constants/truckStatuses');
 const {
   USER_LACKS_AUTHORITY,
+  LOAD_NOT_FOUND_BY_ID,
   CANNOT_EDIT_NOT_NEW_LOAD,
+  CANNOT_POST_NOT_NEW_LOAD,
 } = require('../constants/errors');
 const {DRIVER, SHIPPER} = require('../constants/userRoles');
 const {
   ROUTE_TO_PICK_UP,
   ARRIVED_TO_DELIVERY,
-  LOAD_NOT_FOUND_BY_ID,
 } = require('../constants/loadStates');
 const HttpError = require('../utils/HttpError');
 const removeUndefinedKeys = require('../utils/removeUndefinedKeys');
@@ -85,31 +86,36 @@ class LoadService {
     await this.updateLoadStatus(load, ASSIGNED);
     await this.performLoadStateChange(load, ROUTE_TO_PICK_UP);
   }
-
-  async processNewLoad(loadDto) {
-    const newLoad = await this.createLoad(loadDto);
-
-    const foundTruck = await truckService.findTruckForLoad(newLoad);
+  async processPostedLoad(postedLoad) {
+    const foundTruck = await truckService.findTruckForLoad(postedLoad);
 
     if (!foundTruck) {
-      await this.updateLoadStatus(newLoad, NEW);
+      await this.updateLoadStatus(postedLoad, NEW);
     } else {
-      await this.connectTruckAndLoad(foundTruck, newLoad);
+      await this.connectTruckAndLoad(foundTruck, postedLoad);
     }
 
-    return Load.findById(newLoad);
+    return Load.findById(postedLoad);
   }
 
   async createLoad(loadDto) {
     const newLoad = await this.save(loadDto);
-    return this.updateLoadStatus(newLoad, POSTED);
+    return this.updateLoadStatus(newLoad, NEW);
+  }
+
+  async postLoad(loadId) {
+    const load = await this.findById(loadId);
+
+    if (load.status !== NEW) {
+      throw new HttpError(409, CANNOT_POST_NOT_NEW_LOAD);
+    }
+
+    await this.updateLoadStatus(load, POSTED);
+    return this.processPostedLoad(load);
   }
 
   async finishDelivery(load) {
-    await Load.findByIdAndUpdate(load._id, {status: SHIPPED});
-
-    const updatedLoad = await Load.findById(load._id);
-    await updatedLoad.addLog(`Change status to: ${SHIPPED}`);
+    const updatedLoad = await this.updateLoadStatus(load, SHIPPED);
 
     const populatedLoad =
         await updatedLoad.populate('assignedTo').execPopulate();
