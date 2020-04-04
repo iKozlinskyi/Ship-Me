@@ -14,6 +14,7 @@ const errorHandler = require('./routes/middleware/errorHandler');
 const requireRole = require('./routes/middleware/requireUserRole');
 const mongoose = require('mongoose');
 const {DRIVER, SHIPPER} = require('./constants/userRoles');
+const cors = require('cors');
 
 const mongoUrl = config.get('mongoUrl');
 mongoose.connect(mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -23,6 +24,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.on('open', console.log.bind(console, 'MongoDB connected successfully'));
 
+app.use(cors());
 app.use(morgan('combined', {stream: winston.stream}));
 app.use(express.json());
 const port = config.get('appPort');
