@@ -1,94 +1,102 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Button, Container, Form, Row, Col, Alert} from 'react-bootstrap';
 import authService from '../../service/AuthService';
 import {withRouter} from 'react-router-dom';
 import {SUCCESSFULL_LOG_IN} from '../../constants/messages';
+import * as yup from 'yup';
+import {Formik} from 'formik';
 
-class LogIn extends Component {
-  constructor() {
-    super();
+const schema = yup.object({
+  username: yup.string().required(),
+  password: yup.string().required(),
+});
 
-    this.state = {
-      username: '',
-      password: '',
-      errorMessage: '',
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(evt) {
-    this.setState({
-      [evt.target.name]: evt.target.value,
-      errorMessage: '',
-    });
-  }
-
-  handleSubmit(evt) {
-    evt.preventDefault();
-
-    const {username, password} = this.state;
-    const credentials = {username, password};
+const LogIn = (props) => {
+  const handleSubmit = (credentials, {setSubmitting, setStatus}) => {
+    setStatus(null);
 
     // TODO: blinking message
     authService.login(credentials)
         .then(() => {
-          this.props.history.push({
+          props.history.push({
             pathname: '/',
             state: {
               message: SUCCESSFULL_LOG_IN,
             },
           });
         }).catch((err) => {
-          return this.setState({errorMessage: err.response.data.error});
+          setStatus({credentials: err.response.data.error});
+          setSubmitting(false);
         });
-  }
+  };
 
-  render() {
-    const {username, password, errorMessage} = this.state;
-    return (
-      <Container>
-        <Row>
-          <Col md={{span: 6, offset: 3}}>
-            <Form>
-              {!!errorMessage && <Alert variant="danger">
-                {errorMessage}
-              </Alert>}
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Username</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter username"
-                  value={username}
-                  name="username"
-                  onChange={this.handleChange}
-                />
-              </Form.Group>
+  return (
+    <Formik
+      validationSchema={schema}
+      onSubmit={handleSubmit}
+      initialValues={{
+        username: '',
+        password: '',
+      }}
+    >{({
+        handleSubmit,
+        handleChange,
+        values,
+        errors,
+        status,
+      }) => (
+        <Container>
+          <Row>
+            <Col md={{span: 6, offset: 3}}>
+              <Form>
+                {!!status && <Alert variant="danger">
+                  {status.credentials}
+                </Alert>}
+                <Form.Group controlId="formBasicUsername">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter username"
+                    value={values.username}
+                    name="username"
+                    onChange={handleChange}
+                    isInvalid={!!errors.username}
+                  />
 
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  name="password"
-                  onChange={this.handleChange}
-                />
-              </Form.Group>
-              <Button
-                variant="primary"
-                type="button"
-                onClick={this.handleSubmit}
-              >
+                  <Form.Control.Feedback type="invalid">
+                    {errors.username}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    value={values.password}
+                    name="password"
+                    onChange={handleChange}
+                    isInvalid={!!errors.password}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={handleSubmit}
+                >
                 Submit
-              </Button>
-            </Form>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-}
+                </Button>
+              </Form>
+            </Col>
+          </Row>
+        </Container>
+      )
+      }
+    </Formik>
+  );
+};
 
 export default withRouter(LogIn);
