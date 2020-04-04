@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Container, Form, Row, Col, Alert} from 'react-bootstrap';
 import authService from '../../service/AuthService';
 import {withRouter} from 'react-router-dom';
-import {SUCCESSFULL_LOG_IN} from '../../constants/messages';
+import {SUCCESSFUL_LOG_IN} from '../../constants/messages';
 import * as yup from 'yup';
 import {Formik} from 'formik';
 
@@ -21,7 +21,7 @@ const LogIn = (props) => {
           props.history.push({
             pathname: '/',
             state: {
-              message: SUCCESSFULL_LOG_IN,
+              message: SUCCESSFUL_LOG_IN,
             },
           });
         }).catch((err) => {

@@ -15,12 +15,11 @@ class AuthService {
   }
 
 
-  register(credentials, successCallback) {
-    axios.post(REGISTER_URL, {...credentials})
+  register(credentials) {
+    return axios.post(REGISTER_URL, {...credentials})
         .then((res) => {
           this.saveToken(res.data.token);
           this.setAuthHeader();
-          successCallback(res);
         });
   }
 
