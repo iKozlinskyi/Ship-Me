@@ -2,12 +2,12 @@ import React from 'react';
 import {Tab} from 'react-bootstrap';
 import {get} from 'lodash';
 
-const TruckDetails = ({truck}) => {
+const TruckDetails = ({selectedTruck: {truck = {}, number}}) => {
   const dimensions = get(truck, 'dimensions', '');
 
   return (
     <Tab.Content>
-      <Tab.Pane eventKey={truck._id}>
+      <Tab.Pane eventKey={number}>
         <div>
           <h4>Truck details</h4>
           <div>Name: {truck.name}</div>

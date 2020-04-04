@@ -5,8 +5,8 @@ const TruckItem = ({number, truck, onTruckSelect}) => {
   return (
     <ListGroup.Item
       action
-      onClick={() => onTruckSelect(truck)}
-      eventKey={truck._id}
+      onClick={() => onTruckSelect({truck, number})}
+      eventKey={number}
     >
       <div>{number}. {truck.name}</div>
     </ListGroup.Item>
