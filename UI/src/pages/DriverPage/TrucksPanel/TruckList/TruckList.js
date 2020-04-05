@@ -10,7 +10,7 @@ const TruckList = ({trucks, onTruckSelect}) => {
           <TruckItem
             key={truck._id}
             truck={truck}
-            number={idx + 1}
+            idx={idx}
             onTruckSelect={onTruckSelect}
           />
         );

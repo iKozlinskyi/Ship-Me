@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {getCurrentUser} from '../../api/userApi';
-import {getTrucks} from '../../api/trucksApi';
 import TrucksPanel from './TrucksPanel/TrucksPanel';
 
 class DriverPage extends Component {
@@ -9,17 +8,13 @@ class DriverPage extends Component {
 
     this.state = {
       currentUser: {},
-      trucks: [],
     };
   }
 
   async componentDidMount() {
     const currentUser = await getCurrentUser();
-    const userTrucks = await getTrucks();
-
-    this.setState({currentUser, trucks: userTrucks.trucks});
+    this.setState({currentUser});
   }
-
 
   render() {
     const {currentUser, trucks} = this.state;

@@ -1,13 +1,12 @@
 import React from 'react';
-import {Tab} from 'react-bootstrap';
+import {Button, Tab} from 'react-bootstrap';
 import {get} from 'lodash';
 
-const TruckDetails = ({selectedTruck: {truck = {}, number}}) => {
+const TruckDetails = ({truck={}, setEditMode, truckIdx}) => {
   const dimensions = get(truck, 'dimensions', '');
-
   return (
     <Tab.Content>
-      <Tab.Pane eventKey={number}>
+      <Tab.Pane eventKey={truckIdx}>
         <div>
           <h4>Truck details</h4>
           <div>Name: {truck.name}</div>
@@ -19,6 +18,13 @@ const TruckDetails = ({selectedTruck: {truck = {}, number}}) => {
             <div>Length: {dimensions.length}</div>
           </div>
         </div>
+        <Button
+          variant="primary"
+          className="mt-3"
+          onClick={() => setEditMode(true)}
+        >
+          Edit truck
+        </Button>
       </Tab.Pane>
     </Tab.Content>
   );

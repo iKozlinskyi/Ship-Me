@@ -1,14 +1,14 @@
 import React from 'react';
 import {ListGroup} from 'react-bootstrap';
 
-const TruckItem = ({number, truck, onTruckSelect}) => {
+const TruckItem = ({idx, truck, onTruckSelect}) => {
   return (
     <ListGroup.Item
       action
-      onClick={() => onTruckSelect({truck, number})}
-      eventKey={number}
+      onClick={() => onTruckSelect(idx)}
+      eventKey={idx}
     >
-      <div>{number}. {truck.name}</div>
+      <div>{idx + 1}. {truck.name}</div>
     </ListGroup.Item>
   );
 };
