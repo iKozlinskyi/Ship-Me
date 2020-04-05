@@ -27,7 +27,7 @@ class DriverService {
     const oldTruck = driver.truck;
 
     if (oldTruck) {
-      await truckService.updateById(oldTruck.id, {$unset: {assignedTo: ''}});
+      await truckService.unassignDriverFromTruck(oldTruck.id);
     }
     await driver.update({truck: newTruck});
     newTruck.assignedTo = driver;

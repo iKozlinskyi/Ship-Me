@@ -2,8 +2,13 @@ import React from 'react';
 import {Button, Tab} from 'react-bootstrap';
 import {get} from 'lodash';
 
-const TruckDetails = ({truck, setIsEditMode, truckIdx}) => {
+const TruckDetails = ({truck, setIsEditMode, truckIdx, onTruckAssign}) => {
   const dimensions = get(truck, 'dimensions', '');
+  const isAssigned = !!truck.assignedTo;
+  const handleTruckAssign = () => {
+    onTruckAssign(truck._id);
+  };
+
   return (
     <Tab.Content>
       <Tab.Pane eventKey={truckIdx}>
@@ -18,13 +23,22 @@ const TruckDetails = ({truck, setIsEditMode, truckIdx}) => {
             <div>Length: {dimensions.length}</div>
           </div>
         </div>
-        <Button
-          variant="primary"
-          className="mt-3"
-          onClick={() => setIsEditMode(true)}
-        >
-          Edit truck
-        </Button>
+        <div className="mt-3">
+          <Button
+            variant="primary"
+            className="mr-3"
+            onClick={() => setIsEditMode(true)}
+            disabled={isAssigned}
+          >
+            Edit truck
+          </Button>
+          {!isAssigned && <Button
+            variant="success"
+            onClick={handleTruckAssign}
+          >
+            Assign this truck
+          </Button>}
+        </div>
       </Tab.Pane>
     </Tab.Content>
   );

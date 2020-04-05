@@ -1,32 +1,21 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {getCurrentUser} from '../../api/userApi';
 import TrucksPanel from './TrucksPanel/TrucksPanel';
 
-class DriverPage extends Component {
-  constructor(props) {
-    super(props);
+const DriverPage = () => {
+  const [currentUser, setCurrentUser] = useState({});
 
-    this.state = {
-      currentUser: {},
-    };
-  }
+  useEffect(() => {
+    getCurrentUser().then((user) => setCurrentUser(user));
+  }, []);
 
-  async componentDidMount() {
-    const currentUser = await getCurrentUser();
-    this.setState({currentUser});
-  }
-
-  render() {
-    const {currentUser, trucks} = this.state;
-
-    return (
-      <div>
-        <h3>Hello, {currentUser.username}</h3>
-        <h4>Here are your trucks: </h4>
-        <TrucksPanel trucks={trucks}/>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h3>Hello, {currentUser.username}</h3>
+      <h4>Here are your trucks: </h4>
+      <TrucksPanel currentUser={currentUser}/>
+    </div>
+  );
+};
 
 export default DriverPage;

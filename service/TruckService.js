@@ -116,6 +116,10 @@ class TruckService {
       throw new HttpError(409, CANNOT_CHANGE_DATA_ASSIGNED_TRUCK);
     }
   }
+
+  async unassignDriverFromTruck(truckId) {
+    return Truck.findByIdAndUpdate(truckId, {$unset: {assignedTo: ''}});
+  }
 }
 
 module.exports = new TruckService();
