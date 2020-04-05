@@ -3,7 +3,12 @@ import TruckList from './TruckList/TruckList';
 import {Col, Tab, Row} from 'react-bootstrap';
 import TruckDetails from './TruckDetails/TruckDetails';
 import EditTruckForm from './EditTruckForm/EditTruckForm';
-import {getTrucks, postAssignTruck, putTruck} from '../../../api/trucksApi';
+import {
+  deleteTruck,
+  getTrucks,
+  postAssignTruck,
+  putTruck,
+} from '../../../api/trucksApi';
 
 const TrucksPanel = ({currentUser}) => {
   const [trucks, setTrucks] = useState([]);
@@ -26,6 +31,11 @@ const TrucksPanel = ({currentUser}) => {
 
   const assignTruck = async (truckId) => {
     await postAssignTruck(currentUser._id, truckId);
+    await fetchTrucks();
+  };
+
+  const removeTruck = async (truckId) => {
+    await deleteTruck(truckId);
     await fetchTrucks();
   };
 
@@ -56,6 +66,7 @@ const TrucksPanel = ({currentUser}) => {
                 truckIdx={selectedTruckIdx}
                 setIsEditMode={setIsEditMode}
                 onTruckAssign={assignTruck}
+                onTruckDelete={removeTruck}
               />)
           }
         </Col>

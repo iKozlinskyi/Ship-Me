@@ -16,3 +16,6 @@ export const UPDATE_TRUCK = (truckId) => `${BASE_API_URL}/trucks/${truckId}`;
 
 export const ASSIGN_TRUCK =
   (userId) => `${BASE_API_URL}/users/${userId}/assignedTrucks`;
+
+export const DELETE_TRUCK =
+    (truckId) => `${BASE_API_URL}/trucks/${truckId}`;

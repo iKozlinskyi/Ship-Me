@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   ASSIGN_TRUCK,
+  DELETE_TRUCK,
   GET_TRUCKS,
   UPDATE_TRUCK,
 } from '../globals/routeConstants';
@@ -17,5 +18,10 @@ export const putTruck = (truckId, truckData) => {
 
 export const postAssignTruck = (userId, truckId) => {
   return axios.post(ASSIGN_TRUCK(userId), {truckId})
+      .then((response) => response.data);
+};
+
+export const deleteTruck = (truckId) => {
+  return axios.delete(DELETE_TRUCK(truckId))
       .then((response) => response.data);
 };

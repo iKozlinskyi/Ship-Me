@@ -2,11 +2,20 @@ import React from 'react';
 import {Button, Tab} from 'react-bootstrap';
 import {get} from 'lodash';
 
-const TruckDetails = ({truck, setIsEditMode, truckIdx, onTruckAssign}) => {
+const TruckDetails = ({
+  truck,
+  setIsEditMode,
+  truckIdx,
+  onTruckAssign,
+  onTruckDelete,
+}) => {
   const dimensions = get(truck, 'dimensions', '');
   const isAssigned = !!truck.assignedTo;
   const handleTruckAssign = () => {
     onTruckAssign(truck._id);
+  };
+  const handleTruckDelete = async () => {
+    await onTruckDelete(truck._id);
   };
 
   return (
@@ -30,14 +39,24 @@ const TruckDetails = ({truck, setIsEditMode, truckIdx, onTruckAssign}) => {
             onClick={() => setIsEditMode(true)}
             disabled={isAssigned}
           >
-            Edit truck
+            Edit
           </Button>
-          {!isAssigned && <Button
-            variant="success"
-            onClick={handleTruckAssign}
-          >
-            Assign this truck
-          </Button>}
+          {!isAssigned && <>
+            <Button
+              variant="danger"
+              onClick={handleTruckDelete}
+              className="mr-3"
+            >
+              Delete
+            </Button>
+            <Button
+              variant="success"
+              onClick={handleTruckAssign}
+            >
+              Assign
+            </Button>
+          </>
+          }
         </div>
       </Tab.Pane>
     </Tab.Content>
