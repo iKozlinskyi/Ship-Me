@@ -1,14 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {getCurrentUser} from '../../api/userApi';
+import React from 'react';
 import TrucksPanel from './TrucksPanel/TrucksPanel';
 
-const DriverPage = () => {
-  const [currentUser, setCurrentUser] = useState({});
-
-  useEffect(() => {
-    getCurrentUser().then((user) => setCurrentUser(user));
-  }, []);
-
+const DriverPage = ({currentUser}) => {
   return (
     <div>
       <h3>Hello, {currentUser.username}</h3>

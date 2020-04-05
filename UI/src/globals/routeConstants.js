@@ -22,3 +22,6 @@ export const DELETE_TRUCK_URL =
     (truckId) => `${BASE_API_URL}/trucks/${truckId}`;
 
 export const CREATE_TRUCK_URL = BASE_API_URL + '/trucks';
+
+export const CHANGE_PASSWORD_URL =
+    (userId) => `${BASE_API_URL}/users/${userId}/password`;

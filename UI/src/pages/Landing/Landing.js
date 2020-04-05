@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 const Landing = () => {
   return (
@@ -6,7 +7,8 @@ const Landing = () => {
       <header className="App-header">
         <h2>Welcome to Ship-Me App</h2>
       </header>
-      Login
+      <Link to="/login">Login</Link><br/>
+      <Link to="/register">Register</Link>
     </div>
   );
 };
