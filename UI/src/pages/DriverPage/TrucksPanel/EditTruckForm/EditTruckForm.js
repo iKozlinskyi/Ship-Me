@@ -12,7 +12,7 @@ const schema = yup.object({
   length: yup.number().min(1).max(9999).required('Length is required'),
 });
 
-const EditTruckForm = ({truck, setEditMode, onUpdateTrucks}) => {
+const EditTruckForm = ({truck, setIsEditMode, onUpdateTrucks}) => {
   const handleSubmit = async (formValues) => {
     const truckData = {
       name: formValues.name,
@@ -25,7 +25,7 @@ const EditTruckForm = ({truck, setEditMode, onUpdateTrucks}) => {
     };
 
     await onUpdateTrucks(truck._id, truckData);
-    setEditMode(false);
+    setIsEditMode(false);
   };
 
   return (
@@ -124,7 +124,7 @@ const EditTruckForm = ({truck, setEditMode, onUpdateTrucks}) => {
           <Button
             variant="warning"
             type="button"
-            onClick={() => setEditMode(false)}
+            onClick={() => setIsEditMode(false)}
             className="mr-2"
           >
             Cancel

@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Tab} from 'react-bootstrap';
 import {get} from 'lodash';
 
-const TruckDetails = ({truck={}, setEditMode, truckIdx}) => {
+const TruckDetails = ({truck, setIsEditMode, truckIdx}) => {
   const dimensions = get(truck, 'dimensions', '');
   return (
     <Tab.Content>
@@ -21,7 +21,7 @@ const TruckDetails = ({truck={}, setEditMode, truckIdx}) => {
         <Button
           variant="primary"
           className="mt-3"
-          onClick={() => setEditMode(true)}
+          onClick={() => setIsEditMode(true)}
         >
           Edit truck
         </Button>
