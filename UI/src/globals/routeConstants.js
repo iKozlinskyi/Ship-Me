@@ -10,12 +10,15 @@ export const APP_NAME = 'ship-me-app';
 
 export const CURRENT_USER_URL = BASE_API_URL + '/me';
 
-export const GET_TRUCKS = BASE_API_URL + '/trucks';
+export const GET_TRUCKS_URL = BASE_API_URL + '/trucks';
 
-export const UPDATE_TRUCK = (truckId) => `${BASE_API_URL}/trucks/${truckId}`;
+export const UPDATE_TRUCK_URL =
+    (truckId) => `${BASE_API_URL}/trucks/${truckId}`;
 
-export const ASSIGN_TRUCK =
+export const ASSIGN_TRUCK_URL =
   (userId) => `${BASE_API_URL}/users/${userId}/assignedTrucks`;
 
-export const DELETE_TRUCK =
+export const DELETE_TRUCK_URL =
     (truckId) => `${BASE_API_URL}/trucks/${truckId}`;
+
+export const CREATE_TRUCK_URL = BASE_API_URL + '/trucks';

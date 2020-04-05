@@ -1,12 +1,13 @@
 import React from 'react';
 import {Badge, ListGroup} from 'react-bootstrap';
 
-const TruckItem = ({idx, truck, onTruckSelect}) => {
+const TruckItem = ({idx, truck, onTruckSelect, active}) => {
   const isAssigned = !!truck.assignedTo;
 
   return (
     <ListGroup.Item
       action
+      active={active}
       onClick={() => onTruckSelect(idx)}
       eventKey={idx}
     >

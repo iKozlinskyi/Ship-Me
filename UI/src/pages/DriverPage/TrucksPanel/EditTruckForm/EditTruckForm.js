@@ -2,6 +2,7 @@ import React from 'react';
 import {Formik} from 'formik';
 import {Button, Form} from 'react-bootstrap';
 import * as yup from 'yup';
+import {get} from 'lodash';
 
 const schema = yup.object({
   name: yup.string().required('Name is a required field'),
@@ -12,7 +13,12 @@ const schema = yup.object({
   length: yup.number().min(1).max(9999).required('Length is required'),
 });
 
-const EditTruckForm = ({truck, setIsEditMode, onUpdateTrucks}) => {
+const EditTruckForm = ({
+  truck,
+  setIsEditMode,
+  onUpdateTrucks,
+  onCreateTruck,
+}) => {
   const handleSubmit = async (formValues) => {
     const truckData = {
       name: formValues.name,
@@ -24,7 +30,8 @@ const EditTruckForm = ({truck, setIsEditMode, onUpdateTrucks}) => {
       },
     };
 
-    await onUpdateTrucks(truck._id, truckData);
+    truck !== undefined ? await onUpdateTrucks(truck._id, truckData) :
+        await onCreateTruck(truckData);
     setIsEditMode(false);
   };
 
@@ -34,11 +41,11 @@ const EditTruckForm = ({truck, setIsEditMode, onUpdateTrucks}) => {
       validationSchema={schema}
       onSubmit={handleSubmit}
       initialValues={{
-        name: truck.name,
-        maxPayload: truck.maxPayload,
-        width: truck.dimensions.width,
-        height: truck.dimensions.height,
-        length: truck.dimensions.length,
+        name: get(truck, 'name', ''),
+        maxPayload: get(truck, 'maxPayload', ''),
+        width: get(truck, 'dimensions.width', ''),
+        height: get(truck, 'dimensions.height', ''),
+        length: get(truck, 'dimensions.length', ''),
       }}
     >{({
         handleSubmit,

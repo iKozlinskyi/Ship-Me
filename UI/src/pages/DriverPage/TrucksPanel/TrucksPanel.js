@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import TruckList from './TruckList/TruckList';
-import {Col, Tab, Row} from 'react-bootstrap';
+import {Col, Row} from 'react-bootstrap';
 import TruckDetails from './TruckDetails/TruckDetails';
 import EditTruckForm from './EditTruckForm/EditTruckForm';
 import {
   deleteTruck,
   getTrucks,
-  postAssignTruck,
+  postAssignTruck, postCreateTruck,
   putTruck,
 } from '../../../api/trucksApi';
 
@@ -14,6 +14,7 @@ const TrucksPanel = ({currentUser}) => {
   const [trucks, setTrucks] = useState([]);
   const [selectedTruckIdx, setSelectedTruckIdx] = useState(0);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isTrucksLoaded, setIsTrucksLoaded] = useState(false);
 
   const fetchTrucks = async () => {
     const response = await getTrucks();
@@ -21,7 +22,10 @@ const TrucksPanel = ({currentUser}) => {
   };
 
   useEffect(() => {
-    fetchTrucks();
+    fetchTrucks().then(() => {
+      setIsTrucksLoaded(true);
+      setSelectedTruckIdx(0);
+    });
   }, []);
 
   const updateTrucks = async (truckId, editedTruckData) => {
@@ -39,39 +43,46 @@ const TrucksPanel = ({currentUser}) => {
     await fetchTrucks();
   };
 
+  const createTruck = async (truckData) => {
+    await postCreateTruck(truckData);
+    await fetchTrucks();
+    const lastTruckIdx = trucks.length;
+    setSelectedTruckIdx(lastTruckIdx - 1);
+  };
+
   const selectedTruck = trucks[selectedTruckIdx];
 
   return (
-    <Tab.Container
-      id="truck-panel"
-      defaultActiveKey="0"
-    >
-      <Row>
+    <>
+      {isTrucksLoaded && <Row>
         <Col md={4}>
           <TruckList
             trucks={trucks}
             onTruckSelect={setSelectedTruckIdx}
+            selectedTruckIdx={selectedTruckIdx}
+            onSetIsEditMode={setIsEditMode}
           />
+
         </Col>
         <Col md={8}>
-          {selectedTruck && (isEditMode ?
+          {(isEditMode ?
               <EditTruckForm
                 truck={selectedTruck}
                 setIsEditMode={setIsEditMode}
                 onUpdateTrucks={updateTrucks}
                 truckIdx={selectedTruckIdx}
+                onCreateTruck={createTruck}
               /> :
               <TruckDetails
                 truck={selectedTruck}
-                truckIdx={selectedTruckIdx}
                 setIsEditMode={setIsEditMode}
                 onTruckAssign={assignTruck}
                 onTruckDelete={removeTruck}
               />)
           }
         </Col>
-      </Row>
-    </Tab.Container>
+      </Row>}
+    </>
   );
 };
 
