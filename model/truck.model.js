@@ -10,6 +10,7 @@ const truckSchema = new mongoose.Schema({
     type: String,
     enum: [IS, OL],
   },
+  name: String,
   type: String,
   dimensions: {
     width: {type: Number, required: true},
