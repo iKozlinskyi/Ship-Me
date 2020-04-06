@@ -19,7 +19,7 @@ const Routes = ({currentUser}) => {
       <Route exact path="/register" >
         <SignUp />
       </Route>
-      <Route exact path="/driver" >
+      <Route exact path="/trucks" >
         <DriverPage currentUser={currentUser}/>
       </Route>
       <Route exact path="/me" >

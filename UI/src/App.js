@@ -3,6 +3,7 @@ import './App.css';
 import Routes from './routes/Routes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {getCurrentUser} from './api/userApi';
+import CustomNavbar from './shared/CustomNavbar';
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -13,7 +14,8 @@ function App() {
 
   return (
     <div className="App">
-      <Routes currentUser={currentUser}/>
+      <CustomNavbar currentUser={currentUser}/>
+      <Routes currentUser={currentUser} />
     </div>
   );
 }
