@@ -5,7 +5,6 @@ const DriverPage = ({currentUser}) => {
   return (
     <div>
       <h3>Hello, {currentUser.username}</h3>
-      <h4>Here are your trucks: </h4>
       <TrucksPanel currentUser={currentUser}/>
     </div>
   );

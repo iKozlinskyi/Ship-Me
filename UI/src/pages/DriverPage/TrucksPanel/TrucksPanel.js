@@ -17,8 +17,12 @@ const TrucksPanel = ({currentUser}) => {
   const [isTrucksLoaded, setIsTrucksLoaded] = useState(false);
 
   const fetchTrucks = async () => {
-    const response = await getTrucks();
-    setTrucks(response.trucks);
+    const {trucks} = await getTrucks();
+    setTrucks(trucks);
+
+    if (trucks.length === 0) {
+      setIsEditMode(true);
+    }
   };
 
   useEffect(() => {
@@ -46,19 +50,35 @@ const TrucksPanel = ({currentUser}) => {
   const createTruck = async (truckData) => {
     await postCreateTruck(truckData);
     await fetchTrucks();
-    const lastTruckIdx = trucks.length;
+    const lastTruckIdx = trucks.length || 1;
     setSelectedTruckIdx(lastTruckIdx - 1);
   };
 
+  const handleTruckSelect = (truckIdx) => {
+    setSelectedTruckIdx(truckIdx);
+    if (truckIdx !== -1) {
+      setIsEditMode(false);
+    }
+  };
+
   const selectedTruck = trucks[selectedTruckIdx];
+  const hasUserTrucks = trucks.length !== 0;
+
 
   return (
     <>
+      <Row>
+        <Col>
+          {hasUserTrucks ? <h4>Here are your trucks: </h4> :
+              <h4>Looks like you don`t have any trucks yet.
+                You can add it below</h4>}
+        </Col>
+      </Row>
       {isTrucksLoaded && <Row>
         <Col md={4}>
           <TruckList
             trucks={trucks}
-            onTruckSelect={setSelectedTruckIdx}
+            onTruckSelect={handleTruckSelect}
             selectedTruckIdx={selectedTruckIdx}
             onSetIsEditMode={setIsEditMode}
           />

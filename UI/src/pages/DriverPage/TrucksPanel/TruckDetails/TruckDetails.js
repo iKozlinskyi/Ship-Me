@@ -3,7 +3,7 @@ import {Button} from 'react-bootstrap';
 import {get} from 'lodash';
 
 const TruckDetails = ({
-  truck,
+  truck = {},
   setIsEditMode,
   onTruckAssign,
   onTruckDelete,
