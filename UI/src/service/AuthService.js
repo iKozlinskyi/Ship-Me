@@ -1,26 +1,26 @@
 import axios from 'axios';
 import {
   APP_NAME,
+  CURRENT_USER_URL,
   LOGIN_URL,
   REGISTER_URL,
   USERNAME_AVAILABLE_BASE_URL,
 } from '../globals/routeConstants';
-import jwt from 'jsonwebtoken';
+import {BehaviorSubject} from 'rxjs';
 
 class AuthService {
   constructor() {
+    this.currentUserSubject = new BehaviorSubject(null);
+
     if (this.isLoggedIn()) {
       this.setAuthHeader();
+      this._getCurrentUser();
     }
   }
 
 
   register(credentials) {
-    return axios.post(REGISTER_URL, {...credentials})
-        .then((res) => {
-          this.saveToken(res.data.token);
-          this.setAuthHeader();
-        });
+    return axios.post(REGISTER_URL, {...credentials});
   }
 
   async isUsernameAvailable(username) {
@@ -42,6 +42,7 @@ class AuthService {
         .then((res) => {
           this.saveToken(res.data.token);
           this.setAuthHeader();
+          this._getCurrentUser();
         });
   }
 
@@ -60,7 +61,6 @@ class AuthService {
     return `Bearer ${token}`;
   }
 
-
   setAuthHeader() {
     axios.defaults.headers.common['Authorization'] = this.getAuthHeader();
   }
@@ -72,25 +72,19 @@ class AuthService {
   logOut() {
     localStorage.removeItem(`${APP_NAME}-token`);
     delete axios.defaults.headers.common['Authorization'];
-  }
-
-  refreshAuthHeader() {
-    const authHeader = this.getAuthHeader();
-
-    if (authHeader) {
-      this.setAuthHeader();
-    } else {
-      this.deleteAuthHeader();
-    }
+    this.currentUserSubject.next(null);
   }
 
   isLoggedIn() {
     return !!this.getToken();
   }
 
-  getLoggedUser() {
-    return jwt.decode(this.getToken()).username;
-  }
+  _getCurrentUser() {
+    return axios.get(CURRENT_USER_URL)
+        .then((response) => {
+          this.currentUserSubject.next(response.data);
+        });
+  };
 }
 
 export default new AuthService();

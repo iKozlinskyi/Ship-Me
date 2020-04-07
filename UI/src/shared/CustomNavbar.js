@@ -1,11 +1,17 @@
 import React from 'react';
 import {Navbar, Nav} from 'react-bootstrap';
-import {NavLink} from 'react-router-dom';
+import {NavLink, withRouter} from 'react-router-dom';
 import {LinkContainer} from 'react-router-bootstrap';
 import {getNavbarLinksForUser} from '../utils/getNavbarLinksForUser';
+import authService from '../service/AuthService';
 
-const CustomNavbar = ({currentUser}) => {
+const CustomNavbar = ({currentUser, history, onSetCurrentUser}) => {
   const userLinks = getNavbarLinksForUser(currentUser);
+  const handleLogout = () => {
+    authService.logOut();
+    onSetCurrentUser(null);
+    history.push('/');
+  };
 
   return (
     <Navbar bg="dark" variant="dark" className="mb-2">
@@ -16,9 +22,27 @@ const CustomNavbar = ({currentUser}) => {
             <NavLink to={to} className="nav-link" key={idx}>{name}</NavLink>
           );
         })}
+
+      </Nav>
+      <Nav>
+        {currentUser ? <>
+          <NavLink to="/me" className="nav-link">
+            Logged in as {currentUser.username}
+          </NavLink>
+          <Nav.Link className="nav-link" onClick={handleLogout}>
+            Log Out
+          </Nav.Link>
+        </> : <>
+          <NavLink to="/login" className="nav-link">
+            Log In
+          </NavLink>
+          <NavLink to="/register" className="nav-link">
+            Sign Up
+          </NavLink>
+        </>}
       </Nav>
     </Navbar>
   );
 };
 
-export default CustomNavbar;
+export default withRouter(CustomNavbar);
