@@ -17,6 +17,25 @@ const validateCreateOrEditTruck =
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @apiDefine WrongRequestFormat
+ *
+ * @apiError (400) WrongRequestFormat Request payload has wrong format
+ */
+
+/**
+ * @apiDefine TruckNotFound
+ *
+ * @apiError (404) LoadNotFound Cannot find load with given <code>id</code>
+ */
+
+/**
+ * @apiDefine NoPermission
+ *
+ * @apiError (401) NoPermission User lacks permission
+ */
+
+
 router.param('id', async (req, res, next) => {
   const {id} = req.params;
   if (!isValidObjectId(id)) {
@@ -33,6 +52,25 @@ router.param('id', async (req, res, next) => {
   }
 });
 
+/**
+ * @api {get} api/loads Retrieve list of trucks (for this driver).
+ * @apiName GetTrucks
+ * @apiGroup Truck
+ *
+ * @apiSuccess (200) {Object[]} trucks Loads created by current Shipper.
+ * @apiSuccess (200) {String} truck._id load unique id
+ * @apiSuccess (200) {String} load.assigned_to unique id of
+ * driver who has this truck assigned
+ * @apiSuccess (200) {String} load.created_by unique id of
+ * driver who created this truck
+ * @apiSuccess (200) {String} truck.status truck status
+ * @apiSuccess (200) {String} truck.state truck state
+ * @apiSuccess (200) {Number} truck.maxPayload truck maximum payload
+ * @apiSuccess (200) {Object} truck.dimensions truck dimensions object
+ * @apiSuccess (200) {Number} truck.dimensions.width truck width
+ * @apiSuccess (200) {Number} truck.dimensions.height truck height
+ * @apiSuccess (200) {Number} truck.dimensions.length truck length
+ */
 router.get('/', async (req, res) => {
   const userId = req.user._id;
   const truckEntityList = await truckService.findByCreatedUserId(userId);

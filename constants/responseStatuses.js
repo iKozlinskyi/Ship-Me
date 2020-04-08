@@ -8,7 +8,7 @@ const TRUCK_ASSIGNED = 'Truck assigned successfully';
 const TRUCK_CREATED = 'Truck created successfully';
 const NO_DRIVERS_FOUND = 'No drivers found';
 const TRUCK_REMOVED_SUCCESSFULLY = 'Truck removed successfully';
-
+const LOAD_EDITED = 'Load successfully edited';
 
 module.exports = {
   USER_AUTHENTICATED,
@@ -21,4 +21,5 @@ module.exports = {
   TRUCK_CREATED,
   NO_DRIVERS_FOUND,
   TRUCK_REMOVED_SUCCESSFULLY,
+  LOAD_EDITED,
 };

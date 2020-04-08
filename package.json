@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
+    "apidoc": "^0.20.1",
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
     "husky": "^4.2.3"
@@ -34,5 +35,8 @@
     "hooks": {
       "pre-commit": "npm run lint"
     }
+  },
+  "apidoc": {
+    "title": "Ship-Me app api doc"
   }
 }
