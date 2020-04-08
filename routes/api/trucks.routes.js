@@ -1,6 +1,11 @@
 const truckService = require('../../service/TruckService');
-const {TRUCK_REMOVED_SUCCESSFULLY} = require('../../constants/messages');
+const {
+  TRUCK_REMOVED_SUCCESSFULLY,
+  TRUCK_ASSIGNED,
+  TRUCK_CREATED,
+} = require('../../constants/responseStatuses');
 const truckTypesMap = require('../../constants/truckTypesMap');
+const driverService = require('../../service/DriverService');
 
 const express = require('express');
 const router = express.Router();
@@ -20,23 +25,29 @@ router.param('id', async (req, res, next) => {
 
 router.get('/', async (req, res) => {
   const userId = req.user._id;
-  const trucks = await truckService.findByCreatedUserId(userId);
+  const truckEntityList = await truckService.findByCreatedUserId(userId);
+  const truckResponseDtoList =
+    truckService.convertEntityListToResponseDtoList(truckEntityList);
 
-  res.json({trucks});
+  res.json({trucks: truckResponseDtoList});
 });
 
 router.get('/:id', (req, res) => {
-  res.json(req.truck);
+  const truckResponseDto =
+    truckService.convertTruckEntityToTruckResponseDto(req.truck);
+
+  res.json(truckResponseDto);
 });
 
 router.post('/', async (req, res, next) => {
   const truckData = truckTypesMap[req.body.type] || req.body;
   truckData.createdBy = req.user._id;
+  truckData.type = req.body.type;
 
   try {
-    const savedTruck = await truckService.save(truckData);
+    await truckService.save(truckData);
 
-    res.status(201).json(savedTruck);
+    res.json({status: TRUCK_CREATED});
   } catch (err) {
     return next(err);
   }
@@ -55,7 +66,7 @@ router.delete('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   const {id} = req.params;
-  const truckDto = req.body;
+  const truckDto = truckTypesMap[req.body.type] || req.body;
 
   // So far this is useless, as truckDto always truthy
   if (!truckDto) {
@@ -66,6 +77,19 @@ router.put('/:id', async (req, res, next) => {
     const editedTruck = await truckService.updateById(id, truckDto);
 
     res.json(editedTruck);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.patch('/:id/assign', async (req, res, next) => {
+  const {id: truckId} = req.params;
+  const driverId = req.user._id;
+
+  try {
+    await driverService.assignTruck(driverId, truckId);
+
+    res.json({status: TRUCK_ASSIGNED});
   } catch (err) {
     return next(err);
   }

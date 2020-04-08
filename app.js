@@ -33,13 +33,13 @@ app.get('/', (req, res) => {
   res.json({status: 'ok'});
 });
 
-app.use('/api', authRouter);
+app.use('/api/auth', authRouter);
 
 app.use(authMiddleware);
 app.use('/api/users', usersRouter);
 app.use('/api/me', meRouter);
 app.use('/api/trucks', requireRole(DRIVER), trucksRouter);
-app.use('/api/loads', requireRole(SHIPPER), loadsRouter);
+app.use('/api/loads', requireRole([DRIVER, SHIPPER]), loadsRouter);
 
 app.use(errors());
 app.use(errorHandler);

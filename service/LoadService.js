@@ -14,14 +14,18 @@ const {
   LOAD_NOT_FOUND_BY_ID,
   CANNOT_EDIT_NOT_NEW_LOAD,
   CANNOT_POST_NOT_NEW_LOAD,
+  CANNOT_CHANGE_ARRIVED_LOAD_STATE,
 } = require('../constants/errors');
 const {DRIVER, SHIPPER} = require('../constants/userRoles');
 const {
   ROUTE_TO_PICK_UP,
+  ARRIVED_TO_PICK_UP,
+  ROUTE_TO_DELIVERY,
   ARRIVED_TO_DELIVERY,
 } = require('../constants/loadStates');
 const HttpError = require('../utils/HttpError');
 const removeUndefinedKeys = require('../utils/removeUndefinedKeys');
+const moment = require('moment');
 
 
 class LoadService {
@@ -103,7 +107,7 @@ class LoadService {
     return this.updateLoadStatus(newLoad, NEW);
   }
 
-  async postLoad(loadId) {
+  async postLoadById(loadId) {
     const load = await this.findById(loadId);
 
     if (load.status !== NEW) {
@@ -143,7 +147,8 @@ class LoadService {
     }
   }
 
-  async performLoadStateChange(load, newState) {
+  async performLoadStateChange(load) {
+    const newState = this.getNextLoadState(load);
     const updatedLoad =
         await Load.findByIdAndUpdate(load._id, {state: newState});
     await updatedLoad.addLog(`Change load state to: ${newState}`);
@@ -185,6 +190,55 @@ class LoadService {
 
     // Rehydrate the load doc
     return foundLoads.length > 0 ? this.findById(foundLoads[0]._id) : null;
+  }
+
+  getNextLoadState(load) {
+    const statesTuple = [
+      ROUTE_TO_PICK_UP,
+      ARRIVED_TO_PICK_UP,
+      ROUTE_TO_DELIVERY,
+      ARRIVED_TO_DELIVERY,
+    ];
+    const currentStateIdx = statesTuple.indexOf(load.state);
+
+    if (currentStateIdx === load.length - 1) {
+      throw new HttpError(400, CANNOT_CHANGE_ARRIVED_LOAD_STATE);
+    }
+
+    return statesTuple[currentStateIdx + 1];
+  }
+
+  async getLoadsForRole(user, match, options) {
+    switch (user.role) {
+      case DRIVER:
+        return [await driverService.getAssignedDriverLoad(user)];
+      case SHIPPER:
+        return this.findByCreatedUserId(user._id, match, options);
+    }
+  }
+
+  convertLoadEntityToLoadResponseDto(loadEntity) {
+    return {
+      '_id': loadEntity._id,
+      'assigned_to': loadEntity.assignedTo,
+      'created_by': loadEntity.createdBy,
+      'status': loadEntity.status,
+      'state': loadEntity.state,
+      'logs': loadEntity.logs
+          .map((log) => ({
+            message: log.message,
+            time: moment(log.time).format('X'),
+          })),
+      'payload': loadEntity.payload,
+      'dimensions': loadEntity.dimensions,
+    };
+  }
+
+  convertEntityListToResponseDtoList(loadEntityList) {
+    return loadEntityList
+        .map((loadEntity) => {
+          return this.convertLoadEntityToLoadResponseDto(loadEntity);
+        });
   }
 }
 

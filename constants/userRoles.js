@@ -1,5 +1,5 @@
-const DRIVER = 'DRIVER';
-const SHIPPER = 'SHIPPER';
+const DRIVER = 'driver';
+const SHIPPER = 'shipper';
 
 module.exports = {
   DRIVER,

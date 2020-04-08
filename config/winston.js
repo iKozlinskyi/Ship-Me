@@ -17,14 +17,11 @@ const logger = winston.createLogger({
       db: config.get('mongoUrl'),
       collection: 'errorLogs',
     }),
+    new winston.transports.Console({
+      format: format.simple(),
+    }),
   ],
 });
-
-if (process.env.NODE_ENV !== 'production') {
-  winston.add(new winston.transports.Console({
-    format: format.simple(),
-  }));
-}
 
 logger.stream = {
   write: function(message) {

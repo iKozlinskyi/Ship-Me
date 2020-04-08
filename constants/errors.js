@@ -21,6 +21,8 @@ const CANNOT_EDIT_NOT_NEW_LOAD =
     'Not possible to edit any load with status other than "NEW"';
 const CANNOT_POST_NOT_NEW_LOAD =
     'Not possible to post any load with status other than "NEW"';
+const CANNOT_CHANGE_ARRIVED_LOAD_STATE =
+  'Not possible to change state for arrived load';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -42,4 +44,5 @@ module.exports = {
   TOKEN_EXPIRED,
   CANNOT_EDIT_NOT_NEW_LOAD,
   CANNOT_POST_NOT_NEW_LOAD,
+  CANNOT_CHANGE_ARRIVED_LOAD_STATE,
 };

@@ -6,7 +6,7 @@ const {
 
 const registerValidation = Joi.object().keys({
   username: Joi.string().required(),
-  email: Joi.string().required().email(),
+  email: Joi.string().email(),
   password: Joi.string().required(),
   role: Joi.string().valid(DRIVER, SHIPPER),
 });

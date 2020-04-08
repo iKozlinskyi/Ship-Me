@@ -15,7 +15,6 @@ function App() {
     return () => userSubscription.unsubscribe();
   }, []);
 
-
   return (
     <div className="App">
       <CustomNavbar

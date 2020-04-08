@@ -120,6 +120,24 @@ class TruckService {
   async unassignDriverFromTruck(truckId) {
     return Truck.findByIdAndUpdate(truckId, {$unset: {assignedTo: ''}});
   }
+
+  convertTruckEntityToTruckResponseDto(truckEntity) {
+    return {
+      '_id': truckEntity._id,
+      'assigned_to': truckEntity.assignedTo,
+      'created_by': truckEntity.createdBy,
+      'status': truckEntity.status,
+      'maxPayload': truckEntity.maxPayload,
+      'dimensions': truckEntity.dimensions,
+    };
+  }
+
+  convertEntityListToResponseDtoList(truckEntityList) {
+    return truckEntityList
+        .map((truckEntity) => {
+          return this.convertTruckEntityToTruckResponseDto(truckEntity);
+        });
+  }
 }
 
 module.exports = new TruckService();

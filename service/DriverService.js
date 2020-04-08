@@ -11,8 +11,6 @@ const {
 const HttpError = require('../utils/HttpError');
 
 class DriverService {
-  // This doesn`t look good
-  // TODO: it smells
   async assignTruck(driverId, truckId) {
     const newTruck = await Truck.findById(truckId);
     const driver = await Driver.findById(driverId).populate('truck').exec();
