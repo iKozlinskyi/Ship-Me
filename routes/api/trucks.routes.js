@@ -66,7 +66,9 @@ router.delete('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   const {id} = req.params;
-  const truckDto = truckTypesMap[req.body.type] || req.body;
+  const truckDto = truckTypesMap[req.body.type] ?
+    {...truckTypesMap[req.body.type], type: req.body.type} :
+    req.body;
 
   // So far this is useless, as truckDto always truthy
   if (!truckDto) {

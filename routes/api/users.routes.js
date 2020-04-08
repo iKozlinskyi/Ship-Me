@@ -3,7 +3,7 @@ const router = express.Router();
 const userService = require('../../service/UserService');
 const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
 const changePasswordValidation =
-    require('../../dto/validation/changePasswordValidation');
+    require('../validation/users/changePasswordValidation');
 
 
 router.param('userId', (req, res, next) => {

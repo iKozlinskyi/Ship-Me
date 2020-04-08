@@ -1,4 +1,4 @@
-const {DRIVER, SHIPPER} = require('../../constants/userRoles');
+const {DRIVER, SHIPPER} = require('../../../constants/userRoles');
 const {Joi} = require('celebrate');
 
 const decodedJwtSchema = Joi.object({

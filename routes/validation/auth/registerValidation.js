@@ -2,7 +2,7 @@ const {celebrate, Joi, Segments} = require('celebrate');
 const {
   DRIVER,
   SHIPPER,
-} = require('../../constants/userRoles');
+} = require('../../../constants/userRoles');
 
 const registerValidation = Joi.object().keys({
   username: Joi.string().required(),

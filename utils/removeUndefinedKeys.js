@@ -6,6 +6,8 @@ const removeUndefinedKeys = (obj) => {
       newObj[key] = obj[key];
     }
   });
+
+  return newObj;
 };
 
 module.exports = removeUndefinedKeys;

@@ -4,7 +4,8 @@ const salt = config.get('jwtSalt');
 const userService = require('./UserService');
 const moment = require('moment');
 const {TOKEN_NOT_VALID, TOKEN_EXPIRED} = require('../constants/errors');
-const {decodedJwtSchema} = require('../dto/validation/decodedJwtSchema');
+const {decodedJwtSchema} =
+  require('../routes/validation/middleware/decodedJwtSchema');
 const HttpError = require('../utils/HttpError');
 
 

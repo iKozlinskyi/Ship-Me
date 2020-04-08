@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
-const registerValidation = require('../../dto/validation/registerValidation');
-const loginValidation = require('../../dto/validation/loginValidation');
+const registerValidation = require('../validation/auth/registerValidation');
+const loginValidation = require('../validation/auth/loginValidation');
 const {
   USER_REGISTERED,
   USER_AUTHENTICATED,

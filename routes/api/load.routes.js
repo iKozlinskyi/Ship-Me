@@ -1,9 +1,16 @@
 const {SHIPPER, DRIVER} = require('../../constants/userRoles');
 const loadService = require('../../service/LoadService');
 const express = require('express');
-const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
-const {NEW} = require('../../constants/loadStatuses');
+const {
+  USER_LACKS_AUTHORITY,
+  WRONG_ID_FORMAT,
+} = require('../../constants/errors');
 const requireRole = require('../middleware/requireUserRole');
+const validateGetLoads = require('../validation/load/getLoads');
+const validateCreateOrEditLoad =
+  require('../validation/load/validateCreateOrEditLoad');
+const {isValidObjectId} = require('../../utils/isValidObjectId');
+const HttpError = require('../../utils/HttpError');
 const router = express.Router();
 const {
   LOAD_STATE_CHANGED,
@@ -15,6 +22,9 @@ const {
 
 router.param('id', async (req, res, next) => {
   const {id} = req.params;
+  if (!isValidObjectId(id)) {
+    return next(new HttpError(404, WRONG_ID_FORMAT));
+  }
   const shipper = req.user;
 
   try {
@@ -28,7 +38,7 @@ router.param('id', async (req, res, next) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', validateGetLoads, async (req, res, next) => {
   const match = {
     status: req.query.status,
   };
@@ -39,12 +49,16 @@ router.get('/', async (req, res) => {
     limit: size,
     skip: size * (pageNo - 1),
   };
-  const loadEntityList =
-    await loadService.getLoadsForRole(req.user, match, options);
-  const loadResponseDtoList =
-    loadService.convertEntityListToResponseDtoList(loadEntityList);
+  try {
+    const loadEntityList =
+      await loadService.getLoadsForRole(req.user, match, options);
+    const loadResponseDtoList =
+      loadService.convertEntityListToResponseDtoList(loadEntityList);
 
-  res.json({status: SUCCESS, loads: loadResponseDtoList});
+    res.json({status: SUCCESS, loads: loadResponseDtoList});
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.get('/:id', async (req, res) => {
@@ -54,20 +68,22 @@ router.get('/:id', async (req, res) => {
   res.json({status: SUCCESS, load: loadResponseDto});
 });
 
-router.post('/', requireRole(SHIPPER), async (req, res, next) => {
-  const load = {
-    ...req.body,
-    createdBy: req.user._id,
-    status: NEW,
-  };
+router.post('/',
+    requireRole(SHIPPER),
+    validateCreateOrEditLoad,
+    async (req, res, next) => {
+      const load = {
+        ...req.body,
+        createdBy: req.user._id,
+      };
 
-  try {
-    await loadService.createLoad(load);
-    res.json({status: LOAD_CREATED});
-  } catch (err) {
-    return next(err);
-  }
-});
+      try {
+        await loadService.createLoad(load);
+        res.json({status: LOAD_CREATED});
+      } catch (err) {
+        return next(err);
+      }
+    });
 
 router.delete('/:id', async (req, res, next) => {
   try {
@@ -78,18 +94,20 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-router.put('/:id', async (req, res, next) => {
-  const load = req.load;
-  const editedLoadData = req.body;
+router.put('/:id',
+    validateCreateOrEditLoad,
+    async (req, res, next) => {
+      const load = req.load;
+      const editedLoadData = req.body;
 
-  try {
-    const editedLoad = await loadService.update(load, editedLoadData);
+      try {
+        const editedLoad = await loadService.update(load, editedLoadData);
 
-    res.status(200).json(editedLoad);
-  } catch (err) {
-    return next(err);
-  }
-});
+        res.status(200).json(editedLoad);
+      } catch (err) {
+        return next(err);
+      }
+    });
 
 router.patch('/:id/state',
     requireRole(DRIVER),
