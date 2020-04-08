@@ -1,7 +1,7 @@
 import React from 'react';
 import TrucksPanel from './TrucksPanel/TrucksPanel';
 
-const DriverPage = ({currentUser}) => {
+const TrucksPage = ({currentUser}) => {
   return (
     <div>
       <h3>Hello, {currentUser.username}</h3>
@@ -10,4 +10,4 @@ const DriverPage = ({currentUser}) => {
   );
 };
 
-export default DriverPage;
+export default TrucksPage;

@@ -25,3 +25,13 @@ export const CREATE_TRUCK_URL = BASE_API_URL + '/trucks';
 
 export const CHANGE_PASSWORD_URL =
     (userId) => `${BASE_API_URL}/users/${userId}/password`;
+
+export const GET_LOADS_URL = BASE_API_URL + '/loads';
+
+export const UPDATE_LOAD_URL =
+    (loadId) => `${BASE_API_URL}/loads/${loadId}`;
+
+export const DELETE_LOAD_URL =
+    (loadId) => `${BASE_API_URL}/loads/${loadId}`;
+
+export const CREATE_LOAD_URL = BASE_API_URL + '/loads';

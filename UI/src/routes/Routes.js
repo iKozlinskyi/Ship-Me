@@ -3,9 +3,10 @@ import {Switch, Route} from 'react-router-dom';
 import Landing from '../pages/Landing/Landing';
 import LogIn from '../pages/LogIn/LogIn';
 import SignUp from '../pages/SignUp/SignUp';
-import DriverPage from '../pages/DriverPage/DriverPage';
+import TrucksPage from '../pages/TrucksPage/TrucksPage';
 import UserAccount from '../pages/UserAccount/UserAccount';
 import ChangePassword from '../pages/ChangePassword/ChangePassword';
+import LoadsPage from '../pages/LoadsPage/LoadsPage';
 
 const Routes = ({currentUser}) => {
   return (
@@ -20,7 +21,10 @@ const Routes = ({currentUser}) => {
         <SignUp />
       </Route>
       <Route exact path="/trucks" >
-        <DriverPage currentUser={currentUser}/>
+        <TrucksPage currentUser={currentUser}/>
+      </Route>
+      <Route exact path="/loads" >
+        <LoadsPage currentUser={currentUser}/>
       </Route>
       <Route exact path="/me" >
         <UserAccount currentUser={currentUser}/>

@@ -90,7 +90,6 @@ const TrucksPanel = ({currentUser}) => {
                 truck={selectedTruck}
                 setIsEditMode={setIsEditMode}
                 onUpdateTrucks={updateTrucks}
-                truckIdx={selectedTruckIdx}
                 onCreateTruck={createTruck}
               /> :
               <TruckDetails

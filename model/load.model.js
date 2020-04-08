@@ -14,6 +14,7 @@ const {
 const {SHIPPER, DRIVER} = require('../constants/userRoles');
 
 const loadSchema = new mongoose.Schema({
+  name: String,
   status: {
     type: String,
     enum: [
