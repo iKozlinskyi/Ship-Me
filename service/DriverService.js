@@ -58,7 +58,6 @@ class DriverService {
     return assignedTruck;
   }
 
-  // TODO: driver can reassign load while he is on load already - fix this
   async assignLoad(driverId, loadId) {
     const newLoad = await Load.findById(loadId);
     const driver =

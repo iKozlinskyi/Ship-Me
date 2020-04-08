@@ -29,7 +29,6 @@ const truckSchema = new mongoose.Schema({
   },
 });
 
-// TODO: Calling higher-level abstraction from lower-level - is it ok?
 truckSchema.post('save', handleTruckCollectionUpdated);
 
 const Truck = mongoose.model('Truck', truckSchema);
