@@ -4,10 +4,17 @@ const userService = require('../../service/UserService');
 const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
 const changePasswordValidation =
     require('../validation/users/changePasswordValidation');
-
+const {isValidObjectId} = require('../../utils/isValidObjectId');
+const HttpError = require('../../utils/HttpError');
+const {
+  WRONG_ID_FORMAT,
+} = require('../../constants/errors');
 
 router.param('userId', (req, res, next) => {
   const {userId} = req.params;
+  if (!isValidObjectId(id)) {
+    return next(new HttpError(404, WRONG_ID_FORMAT));
+  }
   const authUser = req.user;
 
   if (userId !== authUser.id) {

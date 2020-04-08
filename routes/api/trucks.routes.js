@@ -6,12 +6,22 @@ const {
 } = require('../../constants/responseStatuses');
 const truckTypesMap = require('../../constants/truckTypesMap');
 const driverService = require('../../service/DriverService');
+const {isValidObjectId} = require('../../utils/isValidObjectId');
+const HttpError = require('../../utils/HttpError');
+const {
+  WRONG_ID_FORMAT,
+} = require('../../constants/errors');
+const validateCreateOrEditTruck =
+  require('../validation/trucks/validateCreateOrEditTruck');
 
 const express = require('express');
 const router = express.Router();
 
 router.param('id', async (req, res, next) => {
   const {id} = req.params;
+  if (!isValidObjectId(id)) {
+    return next(new HttpError(404, WRONG_ID_FORMAT));
+  }
   const driver = req.user;
 
   try {
@@ -39,7 +49,7 @@ router.get('/:id', (req, res) => {
   res.json(truckResponseDto);
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateCreateOrEditTruck, async (req, res, next) => {
   const truckData = truckTypesMap[req.body.type] || req.body;
   truckData.createdBy = req.user._id;
   truckData.type = req.body.type;
@@ -64,7 +74,7 @@ router.delete('/:id', async (req, res, next) => {
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateCreateOrEditTruck, async (req, res, next) => {
   const {id} = req.params;
   const truckDto = truckTypesMap[req.body.type] ?
     {...truckTypesMap[req.body.type], type: req.body.type} :
