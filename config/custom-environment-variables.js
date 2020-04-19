@@ -3,4 +3,5 @@ module.exports = {
   jwtSalt: 'JWT_SALT',
   mongoUrl: `MONGODB_URI`,
   saltRounds: 'SALT_ROUNDS',
+  weatherApiKey: 'WEATHER_API_KEY',
 };
