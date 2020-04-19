@@ -9,6 +9,7 @@ const authRouter = require('./routes/api/auth.routes');
 const loadsRouter = require('./routes/api/load.routes');
 const meRouter = require('./routes/api/me.routes');
 const usersRouter = require('./routes/api/users.routes');
+const weatherRouter = require('./routes/api/weather.routes');
 const authMiddleware = require('./routes/middleware/auth');
 const errorHandler = require('./routes/middleware/errorHandler');
 const requireRole = require('./routes/middleware/requireUserRole');
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/weather', weatherRouter);
 
 app.use(authMiddleware);
 app.use('/api/users', usersRouter);
