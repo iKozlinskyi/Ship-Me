@@ -46,6 +46,7 @@ You can run the app with process env: `MONGODB_URI`
 <br>==============
 - Ability to filter loads by status;
 - Pagination for loads;
+- Any system user can see weather information; 
 
 ## Running the server
 - `yarn start`
