@@ -4,7 +4,21 @@
 #### App deployed to https://ship-me.herokuapp.com/ (only the back end part works so far)
 Please, refer to api docs (found in `/docs` folder) to know more about the implemented endpoints.
 
-### Implemented functionality
+## Prerequisites
+Make sure you have:
+1. NodeJS, npm installed (tested on v. 12.16.1 and v. 6.13.4 respectively)
+2. You have access link to MongoDB provider
+
+## Configuring the app
+
+Local configs might be provided by creating `config/local.js` file.
+1. Create file `config/local.js`
+2. Override records of file `config/default.js` - provide your mongoDB access URI
+
+**OR**
+You can run the app with process env: `MONGODB_URI`
+
+## Implemented functionality
 - Driver is able to register in the system;
 - Driver is able to login into the system;
 - Driver is able to view his profile info;
@@ -33,16 +47,12 @@ Please, refer to api docs (found in `/docs` folder) to know more about the imple
 - Ability to filter loads by status;
 - Pagination for loads;
 
-### Configuring the app
-
-Local configs might be provided by creating `config/local.js` file.
-
-### Running the server
+## Running the server
 - `yarn start`
 Now server is listening on port 8081 (default behavior). Go to http://localhost:8081/
 
 
-### Running client side
+## Running client side
 **Client side is not finished yet**
 
 Please, make sure that you have server up and running.
