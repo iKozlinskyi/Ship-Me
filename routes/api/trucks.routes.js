@@ -3,6 +3,7 @@ const {
   TRUCK_REMOVED_SUCCESSFULLY,
   TRUCK_ASSIGNED,
   TRUCK_CREATED,
+  TRUCK_EDITED_SUCCESSFULLY,
 } = require('../../constants/responseStatuses');
 const truckTypesMap = require('../../constants/truckTypesMap');
 const driverService = require('../../service/DriverService');
@@ -53,23 +54,56 @@ router.param('id', async (req, res, next) => {
 });
 
 /**
- * @api {get} api/loads Retrieve list of trucks (for this driver).
+ * @api {get} api/trucks Retrieve list of trucks (for this driver).
  * @apiName GetTrucks
  * @apiGroup Truck
  *
- * @apiSuccess (200) {Object[]} trucks Loads created by current Shipper.
- * @apiSuccess (200) {String} truck._id load unique id
- * @apiSuccess (200) {String} load.assigned_to unique id of
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiSuccess (200) {Object[]} trucks Trucks created by current Driver.
+ * @apiSuccess (200) {String} truck._id truck unique id
+ * @apiSuccess (200) {String} [truck.assigned_to] unique id of
  * driver who has this truck assigned
  * @apiSuccess (200) {String} load.created_by unique id of
  * driver who created this truck
  * @apiSuccess (200) {String} truck.status truck status
- * @apiSuccess (200) {String} truck.state truck state
  * @apiSuccess (200) {Number} truck.maxPayload truck maximum payload
  * @apiSuccess (200) {Object} truck.dimensions truck dimensions object
  * @apiSuccess (200) {Number} truck.dimensions.width truck width
  * @apiSuccess (200) {Number} truck.dimensions.height truck height
  * @apiSuccess (200) {Number} truck.dimensions.length truck length
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "trucks": [
+ *        {
+ *            "_id": "5e8ddf6bc0157f32f40ab292",
+ *            "assigned_to": "5e8dc5726c0040313c3cb6ee",
+ *            "created_by": "5e8dc5726c0040313c3cb6ee",
+ *            "status": "IN SERVICE",
+ *            "maxPayload": 4000,
+ *            "dimensions": {
+ *                "width": 350,
+ *                "height": 200,
+ *                "length": 700
+ *            }
+ *        },
+ *        {
+ *            "_id": "5e8ddf9c41cd264ef439c508",
+ *            "created_by": "5e8dc5726c0040313c3cb6ee",
+ *            "status": "IN SERVICE",
+ *            "maxPayload": 1200,
+ *            "dimensions": {
+ *                "width": 250,
+ *                "height": 170,
+ *                "length": 300
+ *            }
+ *        }
+ *      ]
+ *     }
  */
 router.get('/', async (req, res) => {
   const userId = req.user._id;
@@ -80,6 +114,44 @@ router.get('/', async (req, res) => {
   res.json({trucks: truckResponseDtoList});
 });
 
+/**
+ * @api {get} api/trucks/:id Get truck with given id.
+ * @apiName GetTruckById
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id truck unique <code>id</code>
+ *
+ * @apiSuccess (200) {String} truck._id truck unique id
+ * @apiSuccess (200) {String} [truck.assigned_to] unique id of
+ * driver who has this truck assigned
+ * @apiSuccess (200) {String} load.created_by unique id of
+ * driver who created this truck
+ * @apiSuccess (200) {String} truck.status truck status
+ * @apiSuccess (200) {Number} truck.maxPayload truck maximum payload
+ * @apiSuccess (200) {Object} truck.dimensions truck dimensions object
+ * @apiSuccess (200) {Number} truck.dimensions.width truck width
+ * @apiSuccess (200) {Number} truck.dimensions.height truck height
+ * @apiSuccess (200) {Number} truck.dimensions.length truck length
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "_id": "5e8ddf6bc0157f32f40ab292",
+ *        "assigned_to": "5e8dc5726c0040313c3cb6ee",
+ *        "created_by": "5e8dc5726c0040313c3cb6ee",
+ *        "status": "IN SERVICE",
+ *        "maxPayload": 4000,
+ *        "dimensions": {
+ *            "width": 350,
+ *            "height": 200,
+ *            "length": 700
+ *        }
+ *     }
+ */
 router.get('/:id', (req, res) => {
   const truckResponseDto =
     truckService.convertTruckEntityToTruckResponseDto(req.truck);
@@ -87,6 +159,65 @@ router.get('/:id', (req, res) => {
   res.json(truckResponseDto);
 });
 
+/**
+ * @api {post} api/trucks Create new truck - using pre-defined type
+ * @apiName PostTruck - using type
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} type - truck type = SPRINTER | SMALL_STRAIGHT |
+ * LARGE_STRAIGHT
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "type": "SPRINTER"
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck created successfully"
+ *     }
+ */
+
+/**
+ * @api {post} api/trucks Create new truck - using custom truck params
+ * @apiName PostTruck - using custom params
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {Number} truck.maxPayload truck maximum payload
+ * @apiParam {Object} truck.dimensions truck dimensions object
+ * @apiParam {Number} truck.dimensions.width truck width
+ * @apiParam {Number} truck.dimensions.height truck height
+ * @apiParam {Number} truck.dimensions.length truck length
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *        "maxPayload": 1250,
+ *        "dimensions": {
+ *            "width": 170,
+ *            "height": 155,
+ *            "length": 342
+ *        }
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck created successfully"
+ *     }
+ */
 router.post('/', validateCreateOrEditTruck, async (req, res, next) => {
   const truckData = truckTypesMap[req.body.type] || req.body;
   truckData.createdBy = req.user._id;
@@ -101,6 +232,25 @@ router.post('/', validateCreateOrEditTruck, async (req, res, next) => {
   }
 });
 
+/**
+ * @api {delete} api/trucks/:id Delete truck by id
+ * @apiName DeleteTruck
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id Truck unique id
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck removed successfully"
+ *     }
+ */
 router.delete('/:id', async (req, res, next) => {
   const truck = req.truck;
 
@@ -112,26 +262,101 @@ router.delete('/:id', async (req, res, next) => {
   res.json({status: TRUCK_REMOVED_SUCCESSFULLY});
 });
 
+/**
+ * @api {put} api/trucks/:id Edit truck - using pre-defined type
+ * @apiName EditTruck - using type
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id Truck unique id
+ * @apiParam {String} type - truck type = SPRINTER | SMALL_STRAIGHT |
+ * LARGE_STRAIGHT
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "type": "SPRINTER"
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck edited successfully"
+ *     }
+ */
+
+/**
+ * @api {put} api/trucks/:id Edit truck - using custom truck params
+ * @apiName EditTruck - using custom params
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id Truck unique id
+ * @apiParam {Number} truck.maxPayload truck maximum payload
+ * @apiParam {Object} truck.dimensions truck dimensions object
+ * @apiParam {Number} truck.dimensions.width truck width
+ * @apiParam {Number} truck.dimensions.height truck height
+ * @apiParam {Number} truck.dimensions.length truck length
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *        "maxPayload": 1250,
+ *        "dimensions": {
+ *            "width": 170,
+ *            "height": 155,
+ *            "length": 342
+ *        }
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck edited successfully"
+ *     }
+ */
 router.put('/:id', validateCreateOrEditTruck, async (req, res, next) => {
   const {id} = req.params;
   const truckDto = truckTypesMap[req.body.type] ?
     {...truckTypesMap[req.body.type], type: req.body.type} :
     req.body;
 
-  // So far this is useless, as truckDto always truthy
-  if (!truckDto) {
-    return res.status(400).json({error: 'wrong request format'});
-  }
-
   try {
-    const editedTruck = await truckService.updateById(id, truckDto);
+    await truckService.updateById(id, truckDto);
 
-    res.json(editedTruck);
+    res.json({status: TRUCK_EDITED_SUCCESSFULLY});
   } catch (err) {
     return next(err);
   }
 });
 
+/**
+ * @api {put} api/trucks/:id/assign Assign truck to current driver
+ * @apiName AssignTruck
+ * @apiGroup Truck
+ *
+ * @apiPermission driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id Truck unique id
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Truck assigned successfully"
+ *     }
+ */
 router.patch('/:id/assign', async (req, res, next) => {
   const {id: truckId} = req.params;
   const driverId = req.user._id;

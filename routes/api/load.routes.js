@@ -19,6 +19,7 @@ const {
   LOAD_POSTED,
   NO_DRIVERS_FOUND,
   LOAD_EDITED,
+  LOAD_REMOVED,
 } = require('../../constants/responseStatuses');
 
 /**
@@ -62,14 +63,19 @@ router.param('id', async (req, res, next) => {
  * @api {get} api/loads Retrieve list of loads (for this shipper).
  * @apiName GetLoads
  * @apiGroup Load
+ *
+ * @apiPermission shipper
+ *
+ * @apiUse AuthHeader
+ *
  * @apiParam {Number} [pageNo=1] Page number (used for pagination of results)
  * @apiParam {Number} [size] Number of results per page
  * @apiParam {String} [state] Load state
  *
- * @apiSuccess (200) {String} status response status.
- * @apiSuccess (200) {Object[]} loads Loads created by current Shipper.
+ * @apiSuccess (200) {String} status response status text
+ * @apiSuccess (200) {Object[]} loads Loads created by current Shipper
  * @apiSuccess (200) {String} load._id load unique id
- * @apiSuccess (200) {String} load.assigned_to unique id of
+ * @apiSuccess (200) {String} [load.assigned_to] unique id of
  * driver who has this load assigned
  * @apiSuccess (200) {String} load.created_by unique id of
  * shipper who created this load
@@ -83,6 +89,98 @@ router.param('id', async (req, res, next) => {
  * @apiSuccess (200) {Object[]} logs array of history logs
  * @apiSuccess (200) {String} log.message log message
  * @apiSuccess (200) {Number} log.time log timestamp
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *        "status": "SUCCESS",
+ *        "loads": [
+ *            {
+ *                "_id": "5e8dc5e96c0040313c3cb6f5",
+ *                "assigned_to": "5e8dc5726c0040313c3cb6ee",
+ *                "created_by": "5e8dc5786c0040313c3cb6f0",
+ *                "status": "SHIPPED",
+ *                "state": "Arrived to Delivery",
+ *                "logs": [
+ *                    {
+ *                        "message": "Load created",
+ *                        "time": "1586349545"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to NEW",
+ *                        "time": "1586349545"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to POSTED",
+ *                        "time": "1586355412"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to NEW",
+ *                        "time": "1586355413"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to POSTED",
+ *                        "time": "1586357753"
+ *                    },
+ *                    {
+ *                        "message": "Assigned to driver with id: 5e8dc5726c0040313c3cb6ee",
+ *                        "time": "1586357753"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to ASSIGNED",
+ *                        "time": "1586357753"
+ *                    },
+ *                    {
+ *                        "message": "Change load state to: En Route to Pick Up",
+ *                        "time": "1586357753"
+ *                    },
+ *                    {
+ *                        "message": "Change load state to: Arrived to Pick Up",
+ *                        "time": "1586359395"
+ *                    },
+ *                    {
+ *                        "message": "Change load state to: En Route to Delivery",
+ *                        "time": "1586359445"
+ *                    },
+ *                    {
+ *                        "message": "Change load state to: Arrived to Delivery",
+ *                        "time": "1586359456"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to SHIPPED",
+ *                        "time": "1586359456"
+ *                    }
+ *                ],
+ *                "payload": 100,
+ *                "dimensions": {
+ *                    "width": 25,
+ *                    "height": 45,
+ *                    "length": 30
+ *                }
+ *            },
+ *            {
+ *                "_id": "5e8dc61bf5bd45190024ea29",
+ *                "created_by": "5e8dc5786c0040313c3cb6f0",
+ *                "status": "NEW",
+ *                "logs": [
+ *                    {
+ *                        "message": "Load created",
+ *                        "time": "1586349595"
+ *                    },
+ *                    {
+ *                        "message": "Changed status to NEW",
+ *                        "time": "1586349595"
+ *                    }
+ *                ],
+ *                "payload": 100,
+ *                "dimensions": {
+ *                    "width": 111,
+ *                    "height": 45,
+ *                    "length": 30
+ *                }
+ *            },
+ *        ]
+ *    }
  */
 router.get('/', validateGetLoads, async (req, res, next) => {
   const match = {
@@ -111,15 +209,20 @@ router.get('/', validateGetLoads, async (req, res, next) => {
  * @api {get} api/loads/:id Retrieve load by id
  * @apiName GetLoadById
  * @apiGroup Load
- * @apiParam {Number} id Load unique id
+ *
+ * @apiPermission shipper, driver
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} id Load unique id
  *
  * @apiSuccess (200) {String} status response status.
  * @apiSuccess (200) {Object} load Load with given id
  * @apiSuccess (200) {String} load._id load unique id
- * @apiSuccess (200) {String} load.assigned_to unique id of
+ * @apiSuccess (200) {String} [load.assigned_to] unique id of
  * driver who has this load assigned
  * @apiSuccess (200) {String} load.created_by unique id of
- * shipper who created this load
+ * shipper who has created this load
  * @apiSuccess (200) {String} load.status load status
  * @apiSuccess (200) {String} load.state load state
  * @apiSuccess (200) {Number} load.payload load payload
@@ -130,7 +233,33 @@ router.get('/', validateGetLoads, async (req, res, next) => {
  * @apiSuccess (200) {Object[]} logs array of history logs
  * @apiSuccess (200) {String} log.message log message
  * @apiSuccess (200) {Number} log.time log timestamp
-
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *       {
+ *          "status": "SUCCESS",
+ *          "load": {
+ *              "_id": "5e8dc61bf5bd45190024ea29",
+ *              "created_by": "5e8dc5786c0040313c3cb6f0",
+ *              "status": "NEW",
+ *              "logs": [
+ *                  {
+ *                      "message": "Load created",
+ *                      "time": "1586349595"
+ *                  },
+ *                  {
+ *                      "message": "Changed status to NEW",
+ *                      "time": "1586349595"
+ *                  }
+ *              ],
+ *              "payload": 100,
+ *              "dimensions": {
+ *                  "width": 111,
+ *                  "height": 45,
+ *                  "length": 30
+ *              }
+ *          }
+ *      }
  *
  * @apiUse LoadNotFound
  * @apiUse NoPermission
@@ -142,6 +271,39 @@ router.get('/:id', async (req, res) => {
   res.json({status: SUCCESS, load: loadResponseDto});
 });
 
+/**
+ * @api {post} api/loads Create new load
+ * @apiName CreateLoad
+ * @apiGroup Load
+ *
+ * @apiPermission shipper
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {Number} load.payload load payload
+ * @apiParam {Object} load.dimensions load dimensions object
+ * @apiParam {Number} load.dimensions.width load width
+ * @apiParam {Number} load.dimensions.height load height
+ * @apiParam {Number} load.dimensions.length load length
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *        "payload": 500,
+ *        "dimensions": {
+ *            "width": 50,
+ *            "height": 75,
+ *            "length": 150
+ *        }
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Load created successfully"
+ *     }
+ */
 router.post('/',
     requireRole(SHIPPER),
     validateCreateOrEditLoad,
@@ -163,9 +325,18 @@ router.post('/',
  * @api {delete} api/loads/:id Delete load with given id
  * @apiName DeleteLoadById
  * @apiGroup Load
- * @apiParam {Number} id Load unique id
  *
- * (200) @apiSuccess {String} status response status
+ * @apiPermission shipper
+ *
+ * @apiParam {String} id Load unique id
+ *
+ * @apiSuccess (200) {String} status response status
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Load removed successfully"
+ *     }
  *
  * @apiUse LoadNotFound
  * @apiUse NoPermission
@@ -173,7 +344,7 @@ router.post('/',
 router.delete('/:id', async (req, res, next) => {
   try {
     await loadService.remove(req.load);
-    res.json({status: 'Load successfully removed'});
+    res.json({status: LOAD_REMOVED});
   } catch (err) {
     return next(err);
   }
@@ -183,6 +354,10 @@ router.delete('/:id', async (req, res, next) => {
  * @api {put} api/loads/:id Edit load
  * @apiName EditLoad
  * @apiGroup Load
+ *
+ * @apiPermission shipper
+ *
+ * @apiParam {String} id load id
  * @apiParam {Number} load.payload load payload
  * @apiParam {Object} load.dimensions load dimensions object
  * @apiParam {Number} load.dimensions.width load width
@@ -191,6 +366,11 @@ router.delete('/:id', async (req, res, next) => {
  *
  * @apiSuccess (200) {String} status response status
  *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Load successfully edited"
+ *     }
  * @apiUse WrongRequestFormat
  * @apiUse LoadNotFound
  * @apiUse NoPermission
@@ -210,6 +390,26 @@ router.put('/:id',
       }
     });
 
+/**
+ * @api {patch} api/loads/:id/state Update load state
+ * @apiName UpdateLoadState
+ * @apiGroup Load
+ *
+ * @apiPermission driver
+ *
+ * @apiParam {String} id load id
+ *
+ * @apiSuccess (200) {String} status response status
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Load state changed successfully"
+ *     }
+ * @apiUse WrongRequestFormat
+ * @apiUse LoadNotFound
+ * @apiUse NoPermission
+ */
 router.patch('/:id/state',
     requireRole(DRIVER),
     async (req, res, next) => {
@@ -223,6 +423,28 @@ router.patch('/:id/state',
       }
     });
 
+/**
+ * @api {patch} api/loads/:id/post Change load status to "posted"
+ * @apiName PostLoad
+ * @apiGroup Load
+ *
+ * @apiPermission shipper
+ *
+ * @apiParam {String} id load id
+ *
+ * @apiSuccess (200) {String} status response status
+ * @apiSuccess (200) {String} [assigned_to] driver id who has this load assigned
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *      "status": "Load posted successfully",
+ *      "assigned_to": "5e8dc61bf5bd4519001d3d29"
+ *     }
+ * @apiUse WrongRequestFormat
+ * @apiUse LoadNotFound
+ * @apiUse NoPermission
+ */
 router.post('/:id/post', requireRole(SHIPPER), async (req, res, next) => {
   const {id} = req.params;
 
