@@ -1995,5 +1995,37 @@ define({ "api": [
         }
       ]
     }
+  },
+  {
+    "type": "get",
+    "url": "api/weather",
+    "title": "Get weather for city",
+    "name": "GetWeather",
+    "group": "Weather",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "city",
+            "description": "<p>city for request</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": " HTTP/1.1 200 OK\n {\n    \"status\": \"SUCCESS\",\n    \"weatherData\": {\n        \"coord\": {\n            \"lon\": -0.13,\n            \"lat\": 51.51\n        },\n        \"weather\": [\n            {\n                \"id\": 800,\n                \"main\": \"Clear\",\n                \"description\": \"clear sky\",\n                \"icon\": \"01d\"\n            }\n        ],\n        \"base\": \"stations\",\n        \"main\": {\n            \"temp\": 290.09,\n            \"feels_like\": 282.1,\n            \"temp_min\": 288.71,\n            \"temp_max\": 290.93,\n            \"pressure\": 1019,\n            \"humidity\": 33\n        },\n        \"visibility\": 10000,\n        \"wind\": {\n            \"speed\": 8.7,\n            \"deg\": 90\n        },\n        \"clouds\": {\n            \"all\": 0\n        },\n        \"dt\": 1587309286,\n        \"sys\": {\n            \"type\": 1,\n            \"id\": 1414,\n            \"country\": \"GB\",\n            \"sunrise\": 1587272119,\n            \"sunset\": 1587323004\n        },\n        \"timezone\": 3600,\n        \"id\": 2643743,\n        \"name\": \"London\",\n        \"cod\": 200\n    }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api/weather.routes.js",
+    "groupTitle": "Weather"
   }
 ] });
