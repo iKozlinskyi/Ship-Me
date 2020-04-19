@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const weatherService = require('./../../service/WeatherService');
 const {SUCCESS} = require('../../constants/responseStatuses');
+const validateGetWeatherForCity =
+  require('./../validation/weather/getWeatherForCity');
 
-router.get('/', async (req, res, next) => {
+router.get('/', validateGetWeatherForCity, async (req, res, next) => {
   const {city} = req.query;
 
   try {
