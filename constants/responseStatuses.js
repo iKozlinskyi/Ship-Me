@@ -11,6 +11,8 @@ const NO_DRIVERS_FOUND = 'No drivers found';
 const TRUCK_REMOVED_SUCCESSFULLY = 'Truck removed successfully';
 const TRUCK_EDITED_SUCCESSFULLY = 'Truck edited successfully';
 const LOAD_EDITED = 'Load successfully edited';
+const PASSWORD_CHANGED = 'Password successfully changed';
+const USER_REMOVED = 'User successfully removed';
 
 module.exports = {
   USER_AUTHENTICATED,
@@ -26,4 +28,6 @@ module.exports = {
   TRUCK_REMOVED_SUCCESSFULLY,
   TRUCK_EDITED_SUCCESSFULLY,
   LOAD_EDITED,
+  PASSWORD_CHANGED,
+  USER_REMOVED,
 };

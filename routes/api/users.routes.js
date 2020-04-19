@@ -1,13 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const userService = require('../../service/UserService');
-const {USER_LACKS_AUTHORITY} = require('../../constants/errors');
 const changePasswordValidation =
     require('../validation/users/changePasswordValidation');
 const {isValidObjectId} = require('../../utils/isValidObjectId');
 const HttpError = require('../../utils/HttpError');
 const {
+  PASSWORD_CHANGED,
+  USER_REMOVED,
+} = require('../../constants/responseStatuses');
+const {
   WRONG_ID_FORMAT,
+  USER_LACKS_AUTHORITY,
 } = require('../../constants/errors');
 
 router.param('userId', (req, res, next) => {
@@ -23,7 +27,31 @@ router.param('userId', (req, res, next) => {
   next();
 });
 
-
+/**
+ * @api {post} /api/:userId/password Change user password
+ *
+ * @apiName ChangePassword
+ * @apiGroup User
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} userId unique user id
+ * @apiParam {String} oldPassword old user password
+ * @apiParam {String} newPassword new user password
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "oldPassword": "123"
+ *       "newPassword": "abc"
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "Password successfully changed"
+ *     }
+ */
 router.post(
     '/:userId/password',
     changePasswordValidation,
@@ -34,19 +62,36 @@ router.post(
       try {
         await userService.changePassword(user, oldPassword, newPassword);
 
-        res.json({status: 'ok'});
+        res.json({status: PASSWORD_CHANGED});
       } catch (err) {
         return next(err);
       }
     });
 
-
-// TODO: removed user has to remove adjacent data: loads for shippers
+/**
+ * @api {delete} /api/:userId Delete user
+ *
+ * @apiName DeleteUser
+ * @apiGroup User
+ *
+ * @apiUse AuthHeader
+ *
+ * @apiParam {String} userId unique user id
+ *
+ * @apiSuccess (200) {String} status Response status text
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "User successfully removed"
+ *     }
+ */
+// TODO: User removal has to remove adjacent data: loads for shippers,
+// trucks for drivers.
 router.delete('/:userId', async (req, res) => {
   const user = req.user;
   await userService.remove(user);
 
-  res.status(200).json({status: 'User successfully removed'});
+  res.status(200).json({status: USER_REMOVED});
 });
 
 module.exports = router;
