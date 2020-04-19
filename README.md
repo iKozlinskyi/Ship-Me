@@ -2,7 +2,7 @@
 
 **This app connects people who has stuff to ship, and drivers who want to earn some money.**
 #### App deployed to https://ship-me.herokuapp.com/ (only the back end part works so far)
-Please, refer to api docs (found in `/docs` folder) to know more about the implemented endpoints.
+Please, refer to api docs (found in `/doc` folder) to know more about the implemented endpoints.
 
 ## Prerequisites
 Make sure you have:
