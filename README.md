@@ -8,15 +8,16 @@ Please, refer to api docs (found in `/doc` folder) to know more about the implem
 Make sure you have:
 1. NodeJS, npm installed (tested on v. 12.16.1 and v. 6.13.4 respectively)
 2. You have access link to MongoDB provider
+3. You have api key for OpenWeatherApp (needed for weather info requests)
 
 ## Configuring the app
 
 Local configs might be provided by creating `config/local.js` file.
 1. Create file `config/local.js`
-2. Override records of file `config/default.js` - provide your mongoDB access URI
+2. Override records of file `config/default.js` - provide your mongoDB access URI and OpenWeatherApp api key
 
 **OR**
-You can run the app with process env: `MONGODB_URI`
+You can run the app with process env: `MONGODB_URI`, `WEATHER_API_KEY`
 
 ## Implemented functionality
 - Driver is able to register in the system;
