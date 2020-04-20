@@ -17,7 +17,7 @@ const {
 } = require('../../constants/responseStatuses');
 
 /**
- * @api {post} /api/auth/login authenticate user
+ * @api {post} /api/auth/login Authenticate user
  *
  * @apiName Login
  * @apiGroup Auth
@@ -54,18 +54,22 @@ router.post('/login', loginValidation, async (req, res, next) => {
 });
 
 /**
- * @api {post} /api/auth/register register user
+ * @api {post} /api/auth/register Register user
  *
  * @apiName Register
  * @apiGroup Auth
  *
- * @apiParam {String} username new user username
- * @apiParam {String} password new user password
+ * @apiParam {String} username
+ * @apiParam {String} password
+ * @apiParam {String} email
+ * @apiParam {String} role [driver, shipper]
  *
  * @apiParamExample {json} Request-Example:
  *     {
  *       "username": "Potato"
- *       "password": "123"
+ *       "password": "123",
+ *       "email": "potato123@gmail.com",
+ *       "role": "shipper"
  *     }
  *
  * @apiSuccess (200) {String} status Response status text

@@ -52,7 +52,7 @@
   {
     "type": "post",
     "url": "/api/auth/login",
-    "title": "authenticate user",
+    "title": "Authenticate user",
     "name": "Login",
     "group": "Auth",
     "parameter": {
@@ -116,7 +116,7 @@
   {
     "type": "post",
     "url": "/api/auth/register",
-    "title": "register user",
+    "title": "Register user",
     "name": "Register",
     "group": "Auth",
     "parameter": {
@@ -127,21 +127,35 @@
             "type": "String",
             "optional": false,
             "field": "username",
-            "description": "<p>new user username</p>"
+            "description": ""
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>new user password</p>"
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "role",
+            "description": "<p>[driver, shipper]</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Request-Example:",
-          "content": "{\n  \"username\": \"Potato\"\n  \"password\": \"123\"\n}",
+          "content": "{\n  \"username\": \"Potato\"\n  \"password\": \"123\",\n  \"email\": \"potato123@gmail.com\",\n  \"role\": \"shipper\"\n}",
           "type": "json"
         }
       ]

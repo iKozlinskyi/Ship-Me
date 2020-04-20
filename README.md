@@ -14,10 +14,10 @@ Make sure you have:
 
 Local configs might be provided by creating `config/local.js` file.
 1. Create file `config/local.js`
-2. Override records of file `config/default.js` - provide your mongoDB access URI and OpenWeatherApp api key
+2. Override records of file `config/default.js` - provide your mongoDB access URI, OpenWeatherApp api key and gmail credentials
 
 **OR**
-You can run the app with process env: `MONGODB_URI`, `WEATHER_API_KEY`
+You can run the app using following process envs: `MONGODB_URI`, `WEATHER_API_KEY`, `MAIL_USER`, `MAIL_PASSWORD`
 
 ## Implemented functionality
 - Driver is able to register in the system;
@@ -45,13 +45,14 @@ You can run the app with process env: `MONGODB_URI`, `WEATHER_API_KEY`
 - API documentation uploaded to repository;
 - Incoming request are logged into console and database. Unhandled server errors are stored into its own table in DB.
 <br>==============
+- Any system user can easily reset his password using 'forgot password' option;
 - Ability to filter loads by status;
 - Pagination for loads;
 - Any system user can see weather information; 
 
 ## Running the server
 - `yarn start`
-Now server is listening on port 8081 (default behavior). Go to http://localhost:8081/
+Now server is listening on port 5050 (default behavior). Go to http://localhost:5050/
 
 
 ## Running client side
