@@ -5,4 +5,6 @@ module.exports = {
   saltRounds: 'SALT_ROUNDS',
   weatherApiKey: 'WEATHER_API_KEY',
   host: 'HOST',
+  mailUser: 'MAIL_USER',
+  mailPassword: 'MAIL_PASSWORD',
 };
