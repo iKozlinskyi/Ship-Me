@@ -1,7 +1,57 @@
 define({ "api": [
   {
     "type": "post",
-    "url": "/api/login",
+    "url": "/api/auth/forgot",
+    "title": "Send reset password email",
+    "name": "ForgotPassword",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>User email</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"email\": \"Potato@gmail.com\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "200": [
+          {
+            "group": "200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Response status text</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"An email with further instructions has been sent\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api/auth.routes.js",
+    "groupTitle": "Auth"
+  },
+  {
+    "type": "post",
+    "url": "/api/auth/login",
     "title": "authenticate user",
     "name": "Login",
     "group": "Auth",
@@ -65,7 +115,7 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/api/register",
+    "url": "/api/auth/register",
     "title": "register user",
     "name": "Register",
     "group": "Auth",
@@ -112,6 +162,63 @@ define({ "api": [
         {
           "title": "Success-Response:",
           "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"User registered successfully\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/api/auth.routes.js",
+    "groupTitle": "Auth"
+  },
+  {
+    "type": "put",
+    "url": "/api/auth/password/:token",
+    "title": "Reset password",
+    "name": "ResetPassword",
+    "group": "Auth",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token obtained from email</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>New password</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"password\": \"123abc\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "200": [
+          {
+            "group": "200",
+            "type": "String",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Response status text</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"status\": \"Password successfully changed\"\n}",
           "type": "json"
         }
       ]

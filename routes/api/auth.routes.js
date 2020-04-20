@@ -17,7 +17,7 @@ const {
 } = require('../../constants/responseStatuses');
 
 /**
- * @api {post} /api/login authenticate user
+ * @api {post} /api/auth/login authenticate user
  *
  * @apiName Login
  * @apiGroup Auth
@@ -54,7 +54,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
 });
 
 /**
- * @api {post} /api/register register user
+ * @api {post} /api/auth/register register user
  *
  * @apiName Register
  * @apiGroup Auth
@@ -86,6 +86,26 @@ router.post('/register', registerValidation, async (req, res, next) => {
   }
 });
 
+/**
+ * @api {post} /api/auth/forgot Send reset password email
+ *
+ * @apiName ForgotPassword
+ * @apiGroup Auth
+ *
+ * @apiParam {String} email User email
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "email": "Potato@gmail.com"
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "An email with further instructions has been sent"
+ *     }
+ */
 router.post('/forgot',
     emailForResetPasswordValidation,
     async (req, res, next) => {
@@ -98,6 +118,27 @@ router.post('/forgot',
       }
     });
 
+/**
+ * @api {put} /api/auth/password/:token Reset password
+ *
+ * @apiName ResetPassword
+ * @apiGroup Auth
+ *
+ * @apiParam {String} token Token obtained from email
+ * @apiParam {String} password New password
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "password": "123abc"
+ *     }
+ *
+ * @apiSuccess (200) {String} status Response status text
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": "Password successfully changed"
+ *     }
+ */
 router.put('/password/:token',
     resetPasswordValidation,
     async (req, res, next) => {
