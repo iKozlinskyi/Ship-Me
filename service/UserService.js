@@ -11,7 +11,10 @@ const Driver = require('../model/driver.model');
 const Shipper = require('../model/shipper.model');
 const {SHIPPER, DRIVER} = require('../constants/userRoles');
 const HttpError = require('../utils/HttpError');
-const {USER_LACKS_AUTHORITY} = require('../constants/errors');
+const {
+  USER_LACKS_AUTHORITY,
+  PASSWORD_TOKEN_NOT_VALID,
+} = require('../constants/errors');
 const crypto = require('crypto');
 const util = require('util');
 const {tokenValidFor} = require('../constants/resetPasswordToken');
@@ -127,7 +130,7 @@ class UserService {
     });
   }
 
-  async resetPassword(email) {
+  async sendPasswordResetToken(email) {
     const user = await this.findByEmail(email);
     const userWithToken = await this.setPasswordResetToken(user);
 
@@ -143,6 +146,10 @@ class UserService {
         .sendMail();
   }
 
+  async resetPassword(token, password) {
+    const user = await this.findByResetPasswordToken(token);
+    await this.updateUserPassword(user, password);
+  }
 
   async generateResetToken() {
     const randomBytesGenerator = util.promisify(crypto.randomBytes);
@@ -154,6 +161,19 @@ class UserService {
     user.resetPasswordToken.token = await this.generateResetToken();
     user.resetPasswordToken.expirationDate = Date.now() + tokenValidFor;
     return user.save();
+  }
+
+  async findByResetPasswordToken(token) {
+    const foundUser = await User.findOne({
+      'resetPasswordToken.token': token,
+      'resetPasswordToken.expirationDate': {$gt: Date.now()},
+    });
+
+    if (!foundUser) {
+      throw new HttpError(400, PASSWORD_TOKEN_NOT_VALID);
+    }
+
+    return foundUser;
   }
 }
 

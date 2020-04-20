@@ -13,6 +13,8 @@ const TRUCK_EDITED_SUCCESSFULLY = 'Truck edited successfully';
 const LOAD_EDITED = 'Load successfully edited';
 const PASSWORD_CHANGED = 'Password successfully changed';
 const USER_REMOVED = 'User successfully removed';
+const PASSWORD_RESET_EMAIL_SENT =
+  'An email with further instructions has been sent';
 
 module.exports = {
   USER_AUTHENTICATED,
@@ -30,4 +32,5 @@ module.exports = {
   LOAD_EDITED,
   PASSWORD_CHANGED,
   USER_REMOVED,
+  PASSWORD_RESET_EMAIL_SENT,
 };

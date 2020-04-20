@@ -25,6 +25,8 @@ const CANNOT_CHANGE_ARRIVED_LOAD_STATE =
   'Not possible to change state for arrived load';
 const WRONG_ID_FORMAT = 'Bad id format';
 const CANNOT_FIND_LOCATION = 'Cannot find location';
+const PASSWORD_TOKEN_NOT_VALID =
+  'Password reset token is invalid or has expired.';
 
 module.exports = {
   NOT_AUTHORIZED,
@@ -49,4 +51,5 @@ module.exports = {
   CANNOT_CHANGE_ARRIVED_LOAD_STATE,
   WRONG_ID_FORMAT,
   CANNOT_FIND_LOCATION,
+  PASSWORD_TOKEN_NOT_VALID,
 };

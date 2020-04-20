@@ -5,10 +5,15 @@ const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
 const registerValidation = require('../validation/auth/registerValidation');
 const loginValidation = require('../validation/auth/loginValidation');
-const resetEmailValidation = require('../validation/auth/resetEmailValidation');
+const emailForResetPasswordValidation =
+  require('../validation/auth/emailForResetPasswordValidation');
+const resetPasswordValidation =
+  require('../validation/auth/resetPasswordValidation');
 const {
   USER_REGISTERED,
   USER_AUTHENTICATED,
+  PASSWORD_RESET_EMAIL_SENT,
+  PASSWORD_CHANGED,
 } = require('../../constants/responseStatuses');
 
 /**
@@ -81,14 +86,29 @@ router.post('/register', registerValidation, async (req, res, next) => {
   }
 });
 
-router.post('/forgot', resetEmailValidation, async (req, res, next) => {
-  const {email} = req.body;
-  try {
-    await userService.resetPassword(email);
-    res.json({status: 'An email with further instructions has been sent'});
-  } catch (err) {
-    next(err);
-  }
-});
+router.post('/forgot',
+    emailForResetPasswordValidation,
+    async (req, res, next) => {
+      const {email} = req.body;
+      try {
+        await userService.sendPasswordResetToken(email);
+        res.json({status: PASSWORD_RESET_EMAIL_SENT});
+      } catch (err) {
+        next(err);
+      }
+    });
+
+router.put('/password/:token',
+    resetPasswordValidation,
+    async (req, res, next) => {
+      const {password} = req.body;
+      const {token} = req.params;
+      try {
+        await userService.resetPassword(token, password);
+        res.json({status: PASSWORD_CHANGED});
+      } catch (err) {
+        next(err);
+      }
+    });
 
 module.exports = router;
