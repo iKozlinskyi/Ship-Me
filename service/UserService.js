@@ -149,6 +149,8 @@ class UserService {
   async resetPassword(token, password) {
     const user = await this.findByResetPasswordToken(token);
     await this.updateUserPassword(user, password);
+    user.resetPasswordToken = undefined;
+    await user.save();
   }
 
   async generateResetToken() {

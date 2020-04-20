@@ -9,7 +9,7 @@ const resetPasswordEmailData = (token, username) => ({
     
     Please, click on the following link, or paste this into your browser to complete the process:
     
-    http://${host}/reset/${token}
+    http://${host}/api/auth/password/${token}
     
     If you did not request this, please ignore this email and your password will remain unchanged.`,
 });
