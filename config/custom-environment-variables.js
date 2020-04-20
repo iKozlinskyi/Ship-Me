@@ -4,4 +4,5 @@ module.exports = {
   mongoUrl: `MONGODB_URI`,
   saltRounds: 'SALT_ROUNDS',
   weatherApiKey: 'WEATHER_API_KEY',
+  host: 'HOST',
 };

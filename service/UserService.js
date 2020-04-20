@@ -15,9 +15,8 @@ const {USER_LACKS_AUTHORITY} = require('../constants/errors');
 const crypto = require('crypto');
 const util = require('util');
 const {tokenValidFor} = require('../constants/resetPasswordToken');
-const nodemailer = require('nodemailer');
-const mg = require('nodemailer-mailgun-transport');
-
+const MailService = require('../service/MailService');
+const {RESET_PASSWORD} = require('../constants/emailTypes');
 
 class UserService {
   async findByCredentials({username, password}) {
@@ -109,40 +108,16 @@ class UserService {
   }
 
   async resetPassword(username) {
-    let transporter = nodemailer.createTransport({
-      host: "127.0.0.1",
-      port: 1025,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: "ship-me-app@protonmail.com",
-        pass: "0be11aCia0"
-      },
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-
-    transporter.verify(function(error, success) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Server is ready to take our messages');
-      }
-    });
-
-    const mailOptions = {
-      from: 'ihor.kozlinskyi.dev@gmail.com',
-      to: 'ihor.kozlinskyi.dev@gmail.com',
-
-      subject: 'Node.js Password Reset',
-      text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'http://' + 'req.headers.host' + '/reset/' + 'token' + '\n\n' +
-          'If you did not request this, please ignore this email and your password will remain unchanged.\n',
+    const mailConfig = {
+      token: await this.generateResetToken(),
+      to: 'ikozlinskyi@gmail.com',
+      username,
     };
-    const data = await transporter.sendMail(mailOptions);
-    console.log(data);
-    return data;
+    const mailService = new MailService();
+
+    return mailService
+        .createEmailOfType(RESET_PASSWORD, mailConfig)
+        .sendMail();
   }
 
 

@@ -5,4 +5,7 @@ module.exports = {
   mongoUrl: `mongodb://localhost:27017/Ship-Me`,
   saltRounds: 5,
   weatherApiKey: 'your_api_key',
+  host: 'localhost:5050',
+  mailUser: 'your_mail_user',
+  mailPassword: 'your_mail_password',
 };
