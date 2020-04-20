@@ -5,6 +5,7 @@ const userService = require('../../service/UserService');
 const authService = require('../../service/AuthService');
 const registerValidation = require('../validation/auth/registerValidation');
 const loginValidation = require('../validation/auth/loginValidation');
+const resetEmailValidation = require('../validation/auth/resetEmailValidation');
 const {
   USER_REGISTERED,
   USER_AUTHENTICATED,
@@ -80,13 +81,12 @@ router.post('/register', registerValidation, async (req, res, next) => {
   }
 });
 
-router.post('/forgot', async (req, res, next) => {
-  const username = req.body.username;
+router.post('/forgot', resetEmailValidation, async (req, res, next) => {
+  const {email} = req.body;
   try {
-    const forgot = await userService.resetPassword(username);
-    res.json({resp: forgot});
+    await userService.resetPassword(email);
+    res.json({status: 'An email with further instructions has been sent'});
   } catch (err) {
-    console.log(err);
     next(err);
   }
 });

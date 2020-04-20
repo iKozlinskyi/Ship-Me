@@ -37,16 +37,28 @@ class UserService {
     if (!foundUser) {
       throw new HttpError(404, USER_LACKS_AUTHORITY);
     }
+
+    return foundUser;
   }
 
-  async createUserOfRole({username, password, role}) {
-    await this.validateUserData(username, password);
+  async findByEmail(email) {
+    const foundUser = await User.findOne({email}).select('-password');
+    if (!foundUser) {
+      throw new HttpError(404, USER_LACKS_AUTHORITY);
+    }
+
+    return foundUser;
+  }
+
+  async createUserOfRole({username, email, password, role}) {
+    await this.checkUserUniqueness({username, email});
 
     const UserModel = this.getUserModel(role);
     const hashedPassword = await this.encodePassword(password);
 
     const createdUser = await UserModel.create({
       username,
+      email,
       password: hashedPassword,
     });
     // To not expose encoded password to outer layer
@@ -60,10 +72,18 @@ class UserService {
     return User.exists({username});
   }
 
-  async validateUserData(username) {
+  async isEmailTaken(email) {
+    return User.exists({email});
+  }
+
+  async checkUserUniqueness({username, email}) {
     const isUsernameTaken = await this.isUsernameTaken(username);
+    const isEmailTaken = await this.isEmailTaken(email);
 
     if (isUsernameTaken) {
+      throw new HttpError(409, USERNAME_TAKEN);
+    }
+    if (isEmailTaken) {
       throw new HttpError(409, USERNAME_TAKEN);
     }
   }
@@ -107,11 +127,14 @@ class UserService {
     });
   }
 
-  async resetPassword(username) {
+  async resetPassword(email) {
+    const user = await this.findByEmail(email);
+    const userWithToken = await this.setPasswordResetToken(user);
+
     const mailConfig = {
-      token: await this.generateResetToken(),
-      to: 'ikozlinskyi@gmail.com',
-      username,
+      token: userWithToken.resetPasswordToken.token,
+      to: user.email,
+      username: user.username,
     };
     const mailService = new MailService();
 
