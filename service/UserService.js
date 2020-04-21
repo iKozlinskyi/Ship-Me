@@ -19,7 +19,7 @@ const crypto = require('crypto');
 const util = require('util');
 const {tokenValidFor} = require('../constants/resetPasswordToken');
 const MailService = require('../service/MailService');
-const {RESET_PASSWORD} = require('../constants/emailTypes');
+const {RESET_PASSWORD} = require('../constants/emails/emailTypes');
 
 class UserService {
   async findByCredentials({username, password}) {

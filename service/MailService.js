@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const {resetPasswordEmailData} =
-  require('../utils/emails/resetPasswordEmailData');
-const {RESET_PASSWORD} = require('../constants/emailTypes');
+  require('../constants/emails/resetPasswordEmailData');
+const {RESET_PASSWORD} = require('../constants/emails/emailTypes');
 const config = require('config');
 const mailUser = config.get('mailUser');
 const mailPassword = config.get('mailPassword');
