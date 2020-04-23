@@ -162,7 +162,7 @@ class LoadService {
 
   async findLoadForTruck(truck) {
     /**
-     *  Finds suitable load which was created first - so it works like a que
+     *  Finds suitable load which was created first - so it works like a queue
      *  (FIFO)
      */
     const foundLoads = await Load.aggregate([
