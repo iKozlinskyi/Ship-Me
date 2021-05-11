@@ -11,7 +11,7 @@
     "eslint-plugin-import": "^2.20.1",
     "formik": "^2.1.4",
     "husky": "^4.2.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
